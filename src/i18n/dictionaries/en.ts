@@ -429,6 +429,7 @@ const en = {
       debtTitle: "2. Borrow",
       balance: "Balance {amount}",
       max: "Max",
+      ltvHint: "max LTV {pct}",
       maxAria: "Use the maximum {asset}",
       amountLabel: "{asset} amount",
       debtAsset: "Borrow asset",
@@ -438,7 +439,7 @@ const en = {
       useSafe: "Use suggested",
       previewTitle: "Pre-trade simulation",
       previewEmpty: "Add collateral to see your health factor and liquidation prices.",
-      preview: { hf: "Health factor", ltv: "Loan-to-value", limit: "Borrow limit used", liqPrice: "{asset} liquidation price", notReachable: "Not reachable", drop: "{pct} below today" },
+      preview: { hf: "Health factor", ltv: "Loan-to-value", limit: "Borrow limit used", liqPrice: "{asset} liquidation price", notReachable: "Not reachable", drop: "{pct} below today", above: "{pct} above today: already past it" },
       submit: "Open vault",
       errors: {
         invalid: "Enter a number, for example 1.5.",

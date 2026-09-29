@@ -430,6 +430,7 @@ const fr: Dictionary = {
       debtTitle: "2. Emprunt",
       balance: "Solde {amount}",
       max: "Max",
+      ltvHint: "LTV max {pct}",
       maxAria: "Utiliser tout le {asset}",
       amountLabel: "Quantité de {asset}",
       debtAsset: "Actif emprunté",
@@ -439,7 +440,7 @@ const fr: Dictionary = {
       useSafe: "Utiliser",
       previewTitle: "Simulation avant transaction",
       previewEmpty: "Ajoutez une garantie pour voir votre facteur de santé et vos prix de liquidation.",
-      preview: { hf: "Facteur de santé", ltv: "Ratio prêt/valeur", limit: "Limite d'emprunt utilisée", liqPrice: "Prix de liquidation du {asset}", notReachable: "Hors d'atteinte", drop: "{pct} sous le prix actuel" },
+      preview: { hf: "Facteur de santé", ltv: "Ratio prêt/valeur", limit: "Limite d'emprunt utilisée", liqPrice: "Prix de liquidation du {asset}", notReachable: "Hors d'atteinte", drop: "{pct} sous le prix actuel", above: "{pct} au-dessus du prix actuel : seuil déjà franchi" },
       submit: "Ouvrir le coffre",
       errors: {
         invalid: "Saisissez un nombre, par exemple 1,5.",

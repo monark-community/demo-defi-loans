@@ -1,7 +1,7 @@
 "use client"
 
 import { useTheme } from "next-themes"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { createContext, useContext, useEffect, useRef, type ReactNode } from "react"
 import { toast, Toaster } from "sonner"
 
@@ -35,6 +35,7 @@ function AlertWatcher() {
   const demo = useDemo()
   const { app, locale } = useAppCopy()
   const router = useRouter()
+  const pathname = usePathname()
   const seen = useRef<Set<string> | null>(null)
 
   useEffect(() => {
@@ -48,12 +49,14 @@ function AlertWatcher() {
       if (seen.current.has(a.id)) continue
       seen.current.add(a.id)
       if (!a.yours || demo.wallet.status !== "connected") continue
+      // The console lists every alert in its own live panel; a toast there would sit on top of it.
+      if (pathname === href(locale, "/app")) continue
       const message = t(app.console.alerts.toast[a.kind], { n: a.vaultNumber, hf: formatHf(a.hf, locale) })
       const action = { label: app.console.alerts.toastAction, onClick: () => router.push(href(locale, `/app/vaults/${a.vaultId}`)) }
       if (a.kind === "recovered") toast.success(message, { action })
       else toast.warning(message, { action, duration: 7000 })
     }
-  }, [demo, app, locale, router])
+  }, [demo, app, locale, router, pathname])
 
   return null
 }

@@ -94,9 +94,11 @@ export function HealthRuler({
       {/* Zone labels */}
       <div aria-hidden="true" className="absolute top-0 right-5 left-3 h-6 text-[0.6875rem] font-bold tracking-wide uppercase">
         <span className="absolute left-0 text-danger">{zones.liquidatable}</span>
-        <span className="absolute hidden -translate-x-1/2 whitespace-nowrap text-warning md:inline" style={{ left: `${(liq + risk) / 2}%` }}>
-          {zones.at_risk}
-        </span>
+        {assumedWidth >= 600 ? (
+          <span className="absolute hidden -translate-x-1/2 whitespace-nowrap text-warning md:inline" style={{ left: `${(liq + risk) / 2}%` }}>
+            {zones.at_risk}
+          </span>
+        ) : null}
         <span className="absolute right-0 text-success">{zones.safe}</span>
       </div>
       <div className="absolute inset-y-0 right-5 left-3">
