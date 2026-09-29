@@ -1,46 +1,40 @@
 "use client"
 
-import { CheckIcon, ClockIcon, Loader2Icon, PlusIcon, WalletIcon, XCircleIcon } from "lucide-react"
+import { Loader2Icon, PlusIcon, WalletIcon, XCircleIcon } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
 
 import { Button } from "@/components/ui/button"
-import { NetworkBadge } from "@/components/ui/network-badge"
 import { href } from "@/i18n/config"
 import { healthFactor, statePrices } from "@/lib/demo/risk"
 import { useDemo, useStorageOk } from "@/lib/demo/store"
-import { NETWORK_NAME } from "@/lib/demo/tokens"
 import { connectWallet } from "@/lib/demo/wallet"
-import { formatDateTime } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
 import { useAppCopy } from "./app-provider"
 import { DemoControls } from "./demo-controls"
-import { Disclaimer } from "./disclaimer"
 
-/** App chrome under the site header: network, clock, disclaimer, demo controls, section nav; gates on wallet connection. */
+/**
+ * App chrome under the site header: one compact bar (section nav, a network pill
+ * that opens the demo controls, "Open a vault"); gates on wallet connection.
+ * The testnet notice lives in the wallet prompt only (brand guidelines §11).
+ */
 export function AppFrame({ children }: { children: ReactNode }) {
   const demo = useDemo()
   const storageOk = useStorageOk()
-  const { app, disclaimer, locale } = useAppCopy()
+  const { app } = useAppCopy()
+  const connected = demo?.wallet.status === "connected"
 
   return (
     <div className="flex flex-1 flex-col">
       <div className="border-b bg-secondary/40">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2.5 sm:px-6">
-          <NetworkBadge name={NETWORK_NAME} variant="outline" icon={<span className="block size-full rounded-full bg-success" />} />
-          {demo ? (
-            <p className="inline-flex items-center gap-1.5 text-xs text-muted-foreground" title={app.clock}>
-              <ClockIcon className="size-3.5" aria-hidden="true" />
-              <span className="sr-only">{app.clock}: </span>
-              <span className="font-semibold tnum">{formatDateTime(demo.clock, locale)} UTC</span>
-            </p>
-          ) : null}
-          <Disclaimer text={disclaimer} className="order-last min-w-0 basis-full md:order-none md:basis-auto md:flex-1" />
-          <div className="ml-auto md:ml-0">
-            <DemoControls />
+        <div className="mx-auto flex min-h-14 max-w-6xl items-center gap-3 px-4 py-2 sm:px-6">
+          {connected ? <AppNav /> : null}
+          <div className="ml-auto flex shrink-0 items-center gap-2">
+            {demo ? <DemoControls /> : null}
+            {connected ? <OpenVaultLink /> : null}
           </div>
         </div>
       </div>
@@ -50,18 +44,24 @@ export function AppFrame({ children }: { children: ReactNode }) {
         </p>
       ) : null}
       <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-6 sm:px-6 lg:py-8">
-        {!demo ? (
-          <AppLoading label={app.loading} />
-        ) : demo.wallet.status !== "connected" ? (
-          <ConnectGate />
-        ) : (
-          <>
-            <AppNav />
-            {children}
-          </>
-        )}
+        {!demo ? <AppLoading label={app.loading} /> : !connected ? <ConnectGate /> : children}
       </div>
     </div>
+  )
+}
+
+function OpenVaultLink() {
+  const { app, locale } = useAppCopy()
+  const pathname = usePathname() ?? ""
+  const openHref = href(locale, "/app/open")
+  const active = pathname === openHref
+  return (
+    <Button asChild size="sm" variant={active ? "outline" : "default"} className="hidden sm:inline-flex">
+      <Link href={openHref} aria-current={active ? "page" : undefined}>
+        <PlusIcon aria-hidden="true" />
+        {app.nav.open}
+      </Link>
+    </Button>
   )
 }
 
@@ -77,11 +77,10 @@ function AppNav() {
     { href: href(locale, "/app/liquidations"), label: app.nav.liquidations, count: liquidatable },
     { href: href(locale, "/app/parameters"), label: app.nav.parameters },
   ]
-  const openHref = href(locale, "/app/open")
 
   return (
-    <nav aria-label={app.nav.label} className="mb-6 flex flex-wrap items-center justify-between gap-3">
-      <ul className="-mx-1 flex max-w-full gap-1 overflow-x-auto rounded-full border bg-card p-1">
+    <nav aria-label={app.nav.label} className="min-w-0">
+      <ul className="flex max-w-full gap-0.5 overflow-x-auto rounded-full border bg-card p-1">
         {items.map((item) => {
           const active = item.exact ? pathname === item.href || pathname.startsWith(`${item.href}/vaults`) : pathname.startsWith(item.href)
           return (
@@ -90,7 +89,7 @@ function AppNav() {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "inline-flex h-9 items-center gap-1.5 rounded-full px-3.5 text-sm font-semibold transition-colors duration-150",
+                  "inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-sm font-semibold transition-colors duration-150",
                   active ? "bg-foreground text-background" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
               >
@@ -105,12 +104,6 @@ function AppNav() {
           )
         })}
       </ul>
-      <Button asChild variant={pathname === openHref ? "outline" : "default"} className="hidden sm:inline-flex">
-        <Link href={openHref} aria-current={pathname === openHref ? "page" : undefined}>
-          <PlusIcon aria-hidden="true" />
-          {app.nav.open}
-        </Link>
-      </Button>
     </nav>
   )
 }
@@ -145,14 +138,6 @@ function ConnectGate() {
         {g.title}
       </h1>
       <p className="mt-3 text-muted-foreground">{g.body}</p>
-      <ul className="mt-6 flex flex-col gap-2 text-left text-sm">
-        {g.features.map((f) => (
-          <li key={f} className="flex items-center gap-2">
-            <CheckIcon className="size-4 text-success" aria-hidden="true" />
-            {f}
-          </li>
-        ))}
-      </ul>
       <Button
         size="lg"
         className="mt-8 w-full sm:w-auto"

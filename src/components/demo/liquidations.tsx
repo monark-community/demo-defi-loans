@@ -5,6 +5,7 @@ import Link from "next/link"
 
 import { StatusChip, statusText } from "@/components/risk/status-chip"
 import { Button } from "@/components/ui/button"
+import { InfoTip } from "@/components/ui/info-tip"
 import { href } from "@/i18n/config"
 import { t } from "@/i18n/t"
 import { collateralUsd, healthFactor, maxLiquidation, statePrices, statusOf } from "@/lib/demo/risk"
@@ -34,8 +35,10 @@ export function Liquidations() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-3xl font-extrabold tracking-display sm:text-4xl">{l.title}</h1>
-        <p className="mt-1 max-w-2xl text-muted-foreground">{l.intro}</p>
+        <div className="flex items-center gap-1">
+          <h1 className="text-3xl font-extrabold tracking-display sm:text-4xl">{l.title}</h1>
+          <InfoTip label={l.infoLabel}>{l.info}</InfoTip>
+        </div>
         <p className="mt-2 text-sm text-muted-foreground tnum">
           {t(l.balanceNote, { usdc: formatToken(demo.balances.tUSDC, "tUSDC", locale), dai: formatToken(demo.balances.tDAI, "tDAI", locale) })}
         </p>
@@ -49,7 +52,6 @@ export function Liquidations() {
           <div className="mt-4 flex flex-col items-center rounded-3xl border border-dashed bg-card px-6 py-12 text-center">
             <ShieldCheckIcon className="size-9 text-primary" strokeWidth={1.5} aria-hidden="true" />
             <p className="mt-4 text-lg font-bold">{l.empty.title}</p>
-            <p className="mt-1 max-w-md text-sm text-muted-foreground">{l.empty.body}</p>
             <Button asChild className="mt-6">
               <Link href={href(locale, "/app#stress-test")}>{l.empty.cta}</Link>
             </Button>
@@ -113,7 +115,6 @@ export function Liquidations() {
             <h2 id="watch-title" className="text-lg font-bold">
               {l.watchTitle}
             </h2>
-            <p className="text-sm text-muted-foreground">{l.watchDesc}</p>
           </div>
           {watch.length === 0 ? (
             <p className="border-t px-6 py-6 text-sm text-muted-foreground">{l.watchEmpty}</p>

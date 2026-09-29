@@ -5,6 +5,7 @@ import { useState } from "react"
 
 import { StatusChip, statusText } from "@/components/risk/status-chip"
 import { Button } from "@/components/ui/button"
+import { InfoTip } from "@/components/ui/info-tip"
 import { t } from "@/i18n/t"
 import { useTx } from "@/lib/demo/chain"
 import { liquidate } from "@/lib/demo/ops"
@@ -17,13 +18,12 @@ import { cn } from "@/lib/utils"
 
 import { AmountField } from "./amount-field"
 import { useAppCopy } from "./app-provider"
-import { Disclaimer } from "./disclaimer"
 import { TxFeedback } from "./tx-feedback"
 
 /** The liquidator's side: repay up to the close factor, pick the collateral to receive, see the bonus. */
 export function LiquidatePanel({ vault }: { vault: Vault }) {
   const demo = useDemo()
-  const { app, locale, disclaimer, status } = useAppCopy()
+  const { app, locale, status } = useAppCopy()
   const l = app.liquidate
   const tx = useTx()
   const held = COLLATERAL.filter((c) => (vault.collateral[c] ?? 0) > 0)
@@ -81,8 +81,8 @@ export function LiquidatePanel({ vault }: { vault: Vault }) {
         <h2 id="liq-title" className="text-lg font-bold">
           {l.title}
         </h2>
+        <InfoTip label={l.infoLabel}>{l.info}</InfoTip>
       </div>
-      <p className="mt-1 text-sm text-muted-foreground">{l.body}</p>
 
       <form
         noValidate
@@ -154,7 +154,6 @@ export function LiquidatePanel({ vault }: { vault: Vault }) {
           {q.capped ? <p className="col-span-2 text-xs text-warning">{l.capped}</p> : null}
         </dl>
 
-        <Disclaimer text={disclaimer} />
         <Button type="submit" size="lg" disabled={tx.busy}>
           {tx.busy ? <Loader2Icon className="animate-spin" aria-hidden="true" /> : <GavelIcon aria-hidden="true" />}
           {t(l.submit, { n: vault.number })}

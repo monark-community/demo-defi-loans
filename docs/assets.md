@@ -15,7 +15,7 @@ From `lovable-migration/brand-refs/` and the [monark-community/website](https://
 
 | File | Source | Used for |
 |-|-|-|
-| `public/brand/monark-mark.svg`, `src/app/icon.svg` | brand-refs `logos/svg/standalone/logo-branded-standalone.svg` | Header pairing, favicon, wallet prompt, connect gate, Open Graph image |
+| `public/brand/monark-mark.svg`, `src/app/icon.svg` | brand-refs `logos/svg/standalone/logo-branded-standalone.svg` | Header brand, favicon, wallet prompt, connect gate, Open Graph image |
 | `public/brand/monark-horizontal-{light,dark}.svg` | website `public/vectors/brand/horizontal/` | Footer Monark band |
 | `public/brand/monark-vertical-{light,dark}.svg` | brand-refs `logos/svg/vertical/` | 404 page. Note: in the kit, the vertical `-light` file has white lettering (for dark backgrounds), so the 404 shows `-dark` on cream and `-light` on espresso. |
 | `public/brand/monark-mesh.svg` | website `public/vectors/decorative/monark-mesh.svg` | Home hero only (once per site), cropped, low opacity |

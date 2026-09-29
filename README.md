@@ -27,7 +27,7 @@ Other scripts:
 | `pnpm build` / `pnpm start` | Production build and server |
 | `pnpm lint` | ESLint (Next.js core-web-vitals + TypeScript rules) |
 | `pnpm typecheck` | Generates route types, then `tsc --noEmit` (strict) |
-| `pnpm screenshots [filter]` | Playwright screenshots of every page and key flow into `docs/screenshots/` (needs `pnpm start -p 3134` running; `BASE_URL` overrides the address) |
+| `pnpm screenshots [filter]` | Playwright screenshots of every page and key flow into `docs/screenshots/` (needs `pnpm start -p 3135` running; `BASE_URL` overrides the address) |
 
 No environment variables are required. `NEXT_PUBLIC_SITE_URL` optionally sets the canonical URL used in metadata, the sitemap and Open Graph (default `https://vaultlend.monark.io`).
 
@@ -42,7 +42,7 @@ There is no chain, wallet extension or backend. `src/lib/demo/` is a small typed
 - **Alerts**: whenever a vault changes status band (safe ≥ 1.25, at risk 1.00–1.25, liquidatable < 1.00) an alert is recorded; alerts about your own vaults also toast on pages where they aren't already visible.
 - **Seed** (`seed.ts`): twelve believable vaults (one of them yours, #1024 with 6 tETH), shared reference prices (tETH $3,200, tWBTC $64,000, tLINK $14.50, tUSDC and tDAI $1.00), two executed proposals and a past liquidation.
 
-The **Demo controls** (in the app bar) fast-forward the protocol clock (+1 or +30 days), slow the network, force a failure and **Reset demo**.
+The **Demo controls** (the "Sepolia testnet" pill in the app bar) fast-forward the protocol clock (+1 or +30 days), slow the network, force a failure and **Reset demo**.
 
 Swapping to a real protocol means replacing `src/lib/demo/` with wagmi/viem reads and writes behind the same functions; components only use its hooks and actions.
 
@@ -60,7 +60,7 @@ src/
       opengraph-image.tsx   Per-locale OG image
     sitemap.ts, robots.ts, icon.svg
   components/
-    site/                   Standard Monark header, footer, pairing, locale and theme switches
+    site/                   Standard Monark header (brand, Demo chip), footer, locale and theme switches
     demo/                   Console, open-vault simulator, vault view, liquidation panel, governance
     risk/                   Health ruler (risk map) and status chips
     diagrams/, home/        Line-art diagrams and the home-page stress widget

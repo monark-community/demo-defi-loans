@@ -1,4 +1,4 @@
-import { ArrowRightIcon, GaugeIcon, GavelIcon, LandmarkIcon, MapIcon, ScaleIcon, ShieldCheckIcon, SirenIcon, SlidersHorizontalIcon } from "lucide-react"
+import { ArrowRightIcon, GaugeIcon, GavelIcon, LandmarkIcon, MapIcon, ShieldCheckIcon, SirenIcon, SlidersHorizontalIcon } from "lucide-react"
 import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
@@ -26,7 +26,6 @@ export async function generateMetadata({ params }: PageProps<"/[locale]">): Prom
   return pageMetadata(locale, "/", null, getDictionary(locale).meta.description)
 }
 
-const OUTCOME_ICONS = [GaugeIcon, SirenIcon, ScaleIcon]
 const AUDIENCE_ICONS = [LandmarkIcon, SlidersHorizontalIcon, ShieldCheckIcon]
 
 export default async function HomePage({ params }: PageProps<"/[locale]">) {
@@ -53,8 +52,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         />
         <div className="relative mx-auto grid max-w-6xl gap-10 px-4 pt-12 pb-16 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-center lg:gap-12 lg:pt-20 lg:pb-24">
           <div>
-            <p className="eyebrow text-primary-ink">{h.eyebrow}</p>
-            <h1 id="hero-title" className="mt-4 text-[2.25rem] leading-[1.06] font-extrabold tracking-display sm:text-5xl lg:text-[3.75rem]">
+            <h1 id="hero-title" className="text-[2.25rem] leading-[1.06] font-extrabold tracking-display sm:text-5xl lg:text-[3.75rem]">
               {h.title}
             </h1>
             <p className="mt-5 max-w-[34rem] text-lg text-muted-foreground sm:text-xl">{h.sub}</p>
@@ -69,7 +67,6 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
                 <Link href={href(locale, "/how-it-works")}>{h.ctaSecondary}</Link>
               </Button>
             </div>
-            <p className="mt-6 text-xs text-muted-foreground">{c.disclaimer}</p>
           </div>
           <StressWidget
             locale={locale}
@@ -82,39 +79,12 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </div>
       </section>
 
-      {/* Outcomes */}
-      <section className="border-t bg-secondary/40" aria-labelledby="outcomes-title">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
-          <div className="max-w-2xl">
-            <h2 id="outcomes-title" className="text-3xl font-bold tracking-display sm:text-[2rem]">
-              {h.outcomes.title}
-            </h2>
-            <p className="mt-4 text-muted-foreground">{h.outcomes.intro}</p>
-          </div>
-          <ul className="mt-10 grid gap-5 md:grid-cols-3">
-            {h.outcomes.items.map((item, i) => {
-              const Icon = OUTCOME_ICONS[i] ?? GaugeIcon
-              return (
-                <li key={item.title} className="rounded-3xl border bg-card p-6">
-                  <Icon className="size-7 text-primary" strokeWidth={1.75} aria-hidden="true" />
-                  <h3 className="mt-4 text-xl font-bold">{item.title}</h3>
-                  <p className="mt-2 text-muted-foreground">{item.body}</p>
-                </li>
-              )
-            })}
-          </ul>
-        </div>
-      </section>
-
       {/* Anatomy of a liquidation */}
       <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:py-20" aria-labelledby="anatomy-title">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="eyebrow text-primary-ink">{h.anatomy.eyebrow}</p>
-            <h2 id="anatomy-title" className="mt-3 text-3xl font-bold tracking-display sm:text-[2rem]">
-              {h.anatomy.title}
-            </h2>
-          </div>
+          <h2 id="anatomy-title" className="text-3xl font-bold tracking-display sm:text-[2rem]">
+            {h.anatomy.title}
+          </h2>
           <Button asChild variant="link" className="self-start sm:self-auto">
             <Link href={href(locale, "/how-it-works#liquidations")}>
               {h.anatomy.cta}
@@ -131,8 +101,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
       {/* Inside the console */}
       <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:py-20" aria-labelledby="console-title">
-        <p className="eyebrow text-primary-ink">{h.console.eyebrow}</p>
-        <h2 id="console-title" className="mt-3 text-3xl font-bold tracking-display sm:text-[2rem]">
+        <h2 id="console-title" className="text-3xl font-bold tracking-display sm:text-[2rem]">
           {h.console.title}
         </h2>
         <ul className="mt-10 grid gap-5 md:grid-cols-2">
@@ -170,11 +139,9 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             />
           </div>
           <div>
-            <p className="eyebrow text-primary-ink">{h.together.eyebrow}</p>
-            <h2 id="together-title" className="mt-3 text-3xl font-bold tracking-display sm:text-[2rem]">
+            <h2 id="together-title" className="text-3xl font-bold tracking-display sm:text-[2rem]">
               {h.together.title}
             </h2>
-            <p className="mt-4 text-muted-foreground">{h.together.body}</p>
             <ul className="mt-8 flex flex-col gap-5">
               {h.together.audiences.map((a, i) => {
                 const Icon = AUDIENCE_ICONS[i] ?? LandmarkIcon
@@ -211,12 +178,9 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       {/* Closing CTA */}
       <section className="mx-auto w-full max-w-6xl px-4 pb-20 sm:px-6" aria-labelledby="closing-title">
         <div className="flex flex-col items-start gap-6 rounded-3xl border bg-card p-8 sm:p-10 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 id="closing-title" className="text-3xl font-extrabold tracking-display">
-              {h.closing.title}
-            </h2>
-            <p className="mt-2 max-w-xl text-muted-foreground">{h.closing.body}</p>
-          </div>
+          <h2 id="closing-title" className="text-3xl font-extrabold tracking-display">
+            {h.closing.title}
+          </h2>
           <Button asChild size="lg" className="shrink-0">
             <Link href={href(locale, "/app")}>
               {h.closing.cta}

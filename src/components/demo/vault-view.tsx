@@ -12,11 +12,9 @@ import { href, type Locale } from "@/i18n/config"
 import { t } from "@/i18n/t"
 import {
   availableToBorrow,
-  borrowLimitUsd,
   collateralUsd,
   healthFactor,
   liquidationPrice,
-  ltv,
   statePrices,
   statusOf,
 } from "@/lib/demo/risk"
@@ -44,7 +42,6 @@ export function VaultView({ id }: { id: string }) {
       <section className="mx-auto flex max-w-md flex-col items-center py-16 text-center">
         <SearchXIcon className="size-10 text-primary" strokeWidth={1.5} aria-hidden="true" />
         <h1 className="mt-4 text-2xl font-extrabold">{v.notFound.title}</h1>
-        <p className="mt-2 text-muted-foreground">{v.notFound.body}</p>
         <Button asChild className="mt-6">
           <Link href={href(locale, "/app")}>{v.notFound.cta}</Link>
         </Button>
@@ -101,13 +98,15 @@ export function VaultView({ id }: { id: string }) {
               <Receipt receipt={lastLiquidation} locale={locale} />
             </section>
           ) : null}
-          {/* Health */}
-          <section aria-labelledby="health-title" className="rounded-3xl border bg-card p-5 sm:p-6">
-            <h2 id="health-title" className="sr-only">
-              {v.gauge}
-            </h2>
-            <PositionPreview after={vault} prices={prices} params={demo.params} />
-          </section>
+          {/* Health (on your own vault, the actions panel shows it with a before/after preview) */}
+          {!yours ? (
+            <section aria-labelledby="health-title" className="rounded-3xl border bg-card p-5 sm:p-6">
+              <h2 id="health-title" className="sr-only">
+                {v.gauge}
+              </h2>
+              <PositionPreview after={vault} prices={prices} params={demo.params} />
+            </section>
+          ) : null}
 
           {/* Collateral */}
           <section aria-labelledby="col-title" className="rounded-3xl border bg-card">
@@ -163,15 +162,12 @@ export function VaultView({ id }: { id: string }) {
             <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3 text-sm sm:grid-cols-3">
               <Fact label={v.debt} value={formatToken(vault.debt, vault.debtToken, locale)} strong />
               <Fact label={v.apr} value={formatPct(demo.params.debt[vault.debtToken].apr, locale)} />
-              <Fact label={v.ltv} value={formatPct(ltv(vault, prices), locale)} />
-              <Fact label={v.limit} value={formatUsd(borrowLimitUsd(vault, prices, demo.params), locale)} />
-              <Fact label={v.available} value={formatToken(availableToBorrow(vault, prices, demo.params), vault.debtToken, locale)} />
-              <Fact label={app.console.table.cols.hf} value={formatHf(hf, locale)} tone={hasDebt ? statusText[st] : undefined} />
+              {yours ? <Fact label={v.available} value={formatToken(availableToBorrow(vault, prices, demo.params), vault.debtToken, locale)} /> : null}
             </dl>
           </section>
         </div>
 
-        <div className="flex flex-col gap-6 lg:sticky lg:top-24">
+        <div className={cn("flex flex-col gap-6 lg:sticky lg:top-24", yours && "order-first lg:order-none")}>
           {yours ? (
             <VaultActions vault={vault} />
           ) : st === "liquidatable" && hasDebt ? (
@@ -179,7 +175,6 @@ export function VaultView({ id }: { id: string }) {
           ) : (
             <section className="rounded-3xl border border-dashed bg-card p-5 text-sm sm:p-6">
               <p>{v.notYours}</p>
-              <p className="mt-2 text-muted-foreground">{v.healthyOther}</p>
               <Button asChild size="sm" variant="outline" className="mt-4">
                 <Link href={href(locale, "/app#stress-test")}>{app.console.stress.title}</Link>
               </Button>
@@ -193,11 +188,11 @@ export function VaultView({ id }: { id: string }) {
   )
 }
 
-function Fact({ label, value, strong, tone }: { label: string; value: string; strong?: boolean; tone?: string }) {
+function Fact({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
   return (
     <div>
       <dt className="text-xs text-muted-foreground">{label}</dt>
-      <dd className={cn("font-semibold tnum", strong && "text-lg font-extrabold", tone)}>{value}</dd>
+      <dd className={cn("font-semibold tnum", strong && "text-lg font-extrabold")}>{value}</dd>
     </div>
   )
 }
@@ -261,7 +256,7 @@ function HistoryRow({ e, you, locale }: { e: VaultEvent; you: string; locale: Lo
   const [open, setOpen] = useState(false)
   const amount = e.token && e.amount !== undefined ? formatToken(e.amount, e.token, locale) : ""
   return (
-    <li className="px-5 py-3 sm:px-6">
+    <li className="px-5 py-3 sm:px-6" title={e.hash}>
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
         <div className="min-w-0">
           <p className={cn("text-sm font-semibold tnum", e.kind === "liquidated" && "text-danger", e.kind === "interest" && "font-normal text-muted-foreground")}>
@@ -270,7 +265,6 @@ function HistoryRow({ e, you, locale }: { e: VaultEvent; you: string; locale: Lo
           <p className="text-xs text-muted-foreground">
             {formatDateTime(e.at, locale)}
             {e.actor ? ` · ${t(h.by, { who: e.actor === you ? h.you : shortAddress(e.actor) })}` : ""}
-            {e.hash ? <span className="ml-1 font-mono">· {e.hash.slice(0, 10)}…</span> : null}
           </p>
         </div>
         {e.receipt ? (

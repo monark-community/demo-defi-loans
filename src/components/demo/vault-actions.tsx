@@ -17,7 +17,6 @@ import { cn } from "@/lib/utils"
 
 import { AmountField } from "./amount-field"
 import { useAppCopy } from "./app-provider"
-import { Disclaimer } from "./disclaimer"
 import { PositionPreview } from "./position-preview"
 import { TxFeedback } from "./tx-feedback"
 
@@ -53,7 +52,7 @@ export function VaultActions({ vault }: { vault: Vault }) {
 
 function ActionForm({ action, vault }: { action: Action; vault: Vault }) {
   const demo = useDemo()
-  const { app, locale, disclaimer } = useAppCopy()
+  const { app, locale } = useAppCopy()
   const a = app.vault.actions
   const tx = useTx()
   const held = COLLATERAL.filter((c) => (vault.collateral[c] ?? 0) > 0)
@@ -186,7 +185,6 @@ function ActionForm({ action, vault }: { action: Action; vault: Vault }) {
       <div className="rounded-2xl border bg-background/60 p-4">
         <PositionPreview before={vault} after={after} prices={prices} params={demo.params} title={a.preview} />
       </div>
-      <Disclaimer text={disclaimer} />
       <Button type="submit" size="lg" disabled={tx.busy || (action === "repay" && vault.debt <= 0)}>
         {tx.busy ? <Loader2Icon className="animate-spin" aria-hidden="true" /> : null}
         {t(a.submit[action], { asset: token })}

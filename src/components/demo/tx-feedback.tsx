@@ -1,6 +1,6 @@
 "use client"
 
-import { Loader2Icon, RotateCcwIcon, WalletIcon, XCircleIcon } from "lucide-react"
+import { RotateCcwIcon, WalletIcon, XCircleIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { TxStatus } from "@/components/ui/tx-status"
@@ -41,13 +41,7 @@ export function TxFeedback({
       ) : null}
 
       {state.phase === "pending" && state.hash ? (
-        <div className="flex flex-col gap-1.5">
-          <p className="inline-flex items-center gap-2 text-sm font-semibold">
-            <Loader2Icon className="size-4 animate-spin text-primary" aria-hidden="true" />
-            {pendingLabel ?? tx.pending}
-          </p>
-          <TxStatus status="pending" hash={state.hash} label={tx.pending} className="self-start" />
-        </div>
+        <TxStatus status="pending" hash={state.hash} label={pendingLabel ?? tx.pending} className="self-start" />
       ) : null}
 
       {state.phase === "confirmed" && state.hash ? (
@@ -66,7 +60,6 @@ export function TxFeedback({
               {tx.errors[state.error ?? "reverted"]}
             </span>
           </p>
-          {state.hash ? <TxStatus status="failed" hash={state.hash} label={tx.failed} className="self-start" /> : null}
           {onRetry || onDismiss ? (
             <div className="flex flex-wrap gap-2">
               {onRetry ? (

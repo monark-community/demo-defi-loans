@@ -71,7 +71,6 @@ export function StressWidget({
         <span id="widget-title" className="text-sm font-bold">
           {copy.title}
         </span>
-        <span className="text-xs text-muted-foreground">{copy.hint}</span>
       </figcaption>
 
       <div className="mt-5" aria-label={copy.ruler} role="group">

@@ -7,6 +7,7 @@ import { useState } from "react"
 import { dotSize, ResponsiveRuler } from "@/components/risk/health-ruler"
 import { StatusChip } from "@/components/risk/status-chip"
 import { Button } from "@/components/ui/button"
+import { InfoTip } from "@/components/ui/info-tip"
 import { Input } from "@/components/ui/input"
 import { href } from "@/i18n/config"
 import { t } from "@/i18n/t"
@@ -20,7 +21,6 @@ import { formatDateTime, formatHf, formatPct, inputValue } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
 import { useAppCopy } from "./app-provider"
-import { Disclaimer } from "./disclaimer"
 import { TxFeedback } from "./tx-feedback"
 
 const RANGES: Record<ParamKey, [number, number]> = {
@@ -38,9 +38,9 @@ export function Parameters() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
+      <div className="flex items-center gap-1">
         <h1 className="text-3xl font-extrabold tracking-display sm:text-4xl">{p.title}</h1>
-        <p className="mt-1 max-w-2xl text-muted-foreground">{p.intro}</p>
+        <InfoTip label={p.infoLabel}>{p.info}</InfoTip>
       </div>
 
       <section aria-labelledby="table-title" className="rounded-3xl border bg-card">
@@ -93,7 +93,7 @@ export function Parameters() {
 
 function ProposeForm() {
   const demo = useDemo()
-  const { app, locale, status, disclaimer } = useAppCopy()
+  const { app, locale, status } = useAppCopy()
   const p = app.params
   const f = p.propose
   const tx = useTx()
@@ -290,7 +290,6 @@ function ProposeForm() {
           <p className="mt-3 text-xs text-muted-foreground">{f.impactNote}</p>
         </div>
 
-        <Disclaimer text={disclaimer} />
         <Button type="submit" size="lg" disabled={tx.busy} className="self-stretch sm:self-start">
           {tx.busy ? <Loader2Icon className="animate-spin" aria-hidden="true" /> : <TimerIcon aria-hidden="true" />}
           {f.submit}
@@ -376,7 +375,6 @@ function ProposalRow({ proposal: p, clock }: { proposal: Proposal; clock: string
               {pr.execute}
             </Button>
           </div>
-          {!ready ? <p className="text-xs text-muted-foreground">{pr.fastForwardHint}</p> : null}
         </div>
       )}
       <TxFeedback

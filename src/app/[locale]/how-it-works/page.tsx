@@ -9,6 +9,7 @@ import { ReceiptBar } from "@/components/diagrams/receipt-bar"
 import { TimelockTimeline } from "@/components/diagrams/timelock"
 import { SectionDivider } from "@/components/site/section-divider"
 import { Button } from "@/components/ui/button"
+import { Disclosure } from "@/components/ui/disclosure"
 import { href, isLocale } from "@/i18n/config"
 import { getDictionary } from "@/i18n"
 import { COLLATERAL, DEFAULT_PARAMS } from "@/lib/demo/tokens"
@@ -57,8 +58,7 @@ export default async function HowItWorksPage({ params }: PageProps<"/[locale]/ho
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 lg:py-16">
       <header className="max-w-3xl">
-        <p className="eyebrow text-primary-ink">{h.eyebrow}</p>
-        <h1 className="mt-3 text-4xl font-extrabold tracking-display sm:text-5xl">{h.title}</h1>
+        <h1 className="text-4xl font-extrabold tracking-display sm:text-5xl">{h.title}</h1>
         <p className="mt-4 text-lg text-muted-foreground">{h.intro}</p>
       </header>
 
@@ -81,7 +81,9 @@ export default async function HowItWorksPage({ params }: PageProps<"/[locale]/ho
           <Block id="health-factor" title={h.hf.title}>
             <p className="mt-3 text-muted-foreground">{h.hf.body}</p>
             <Formula>{h.hf.formula}</Formula>
-            <div className="mt-6 grid gap-5 rounded-3xl border bg-card p-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:p-6">
+            <p className="mt-4 text-sm text-muted-foreground">{h.hf.bands}</p>
+            <Disclosure summary={h.show.example} className="mt-5">
+            <div className="grid gap-5 rounded-3xl border bg-card p-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:p-6">
               <div>
                 <h3 className="font-bold">{h.hf.exampleTitle}</h3>
                 <dl className="mt-3 flex flex-col divide-y text-sm">
@@ -113,20 +115,24 @@ export default async function HowItWorksPage({ params }: PageProps<"/[locale]/ho
                 <p className="text-center text-sm font-extrabold text-success tnum">{h.hf.diagram.ratio}</p>
               </figure>
             </div>
-            <p className="mt-4 text-sm text-muted-foreground">{h.hf.bands}</p>
+            </Disclosure>
           </Block>
 
           <Block id="liquidation-price" title={h.liqPrice.title}>
             <p className="mt-3 text-muted-foreground">{h.liqPrice.body}</p>
             <Formula>{h.liqPrice.formula}</Formula>
-            <p className="mt-4 font-semibold tnum">{h.liqPrice.example}</p>
-            <p className="mt-2 text-sm text-muted-foreground">{h.liqPrice.note}</p>
+            <Disclosure summary={h.show.example} className="mt-5">
+              <p className="font-semibold tnum">{h.liqPrice.example}</p>
+              <p className="mt-2 text-sm text-muted-foreground">{h.liqPrice.note}</p>
+            </Disclosure>
           </Block>
 
           <Block id="interest" title={h.interest.title}>
             <p className="mt-3 text-muted-foreground">{h.interest.body}</p>
             <Formula>{h.interest.formula}</Formula>
-            <p className="mt-4 font-semibold tnum">{h.interest.example}</p>
+            <Disclosure summary={h.show.example} className="mt-5">
+              <p className="font-semibold tnum">{h.interest.example}</p>
+            </Disclosure>
           </Block>
 
           <Block id="liquidations" title={h.liquidation.title}>
@@ -139,7 +145,8 @@ export default async function HowItWorksPage({ params }: PageProps<"/[locale]/ho
                 </div>
               ))}
             </dl>
-            <div className="mt-6 rounded-3xl border bg-card p-5 sm:p-6">
+            <Disclosure summary={h.show.receipt} className="mt-5">
+            <div className="rounded-3xl border bg-card p-5 sm:p-6">
               <h3 className="font-bold">{h.liquidation.receiptTitle}</h3>
               <dl className="mt-3 flex flex-col divide-y text-sm">
                 {h.liquidation.receipt.map((row) => (
@@ -158,8 +165,9 @@ export default async function HowItWorksPage({ params }: PageProps<"/[locale]/ho
                 bonusShare={660 / 7260}
                 animate={false}
               />
+              <p className="mt-4 text-sm text-muted-foreground">{h.liquidation.note}</p>
             </div>
-            <p className="mt-4 text-sm text-muted-foreground">{h.liquidation.note}</p>
+            </Disclosure>
           </Block>
 
           <SectionDivider className="px-0 sm:px-0" />
@@ -220,7 +228,6 @@ export default async function HowItWorksPage({ params }: PageProps<"/[locale]/ho
           <h2 id="teach-title" className="text-2xl font-bold tracking-display sm:text-[2rem]">
             {h.teach.title}
           </h2>
-          <p className="mt-3 text-muted-foreground">{h.teach.body}</p>
           <Button asChild size="lg" className="mt-6">
             <Link href={href(locale, "/app")}>
               {h.teach.cta}

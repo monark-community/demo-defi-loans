@@ -1,12 +1,12 @@
 // Visual check of every page and key flow with Playwright.
-// Usage: pnpm build && pnpm start -p 3134   (in another terminal)
-//        pnpm screenshots [filter]         (BASE_URL defaults to http://localhost:3134)
+// Usage: pnpm build && pnpm start -p 3135   (in another terminal)
+//        pnpm screenshots [filter]         (BASE_URL defaults to http://localhost:3135)
 // Output: docs/screenshots/<locale>-<width>-<theme>-<name>.png
 import { mkdir } from "node:fs/promises"
 import { fileURLToPath } from "node:url"
 import { chromium } from "playwright"
 
-const BASE = process.env.BASE_URL ?? "http://localhost:3134"
+const BASE = process.env.BASE_URL ?? "http://localhost:3135"
 const OUT = fileURLToPath(new URL("../docs/screenshots/", import.meta.url))
 const ONLY = process.argv[2] ?? process.env.ONLY // optional filter on the variant tag, e.g. "en-390"
 const KEY = "vaultlend-demo-v1"

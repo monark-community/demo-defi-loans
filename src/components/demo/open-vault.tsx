@@ -1,10 +1,12 @@
 "use client"
 
 import { Loader2Icon, LockIcon } from "lucide-react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
+import { InfoTip } from "@/components/ui/info-tip"
 import { href } from "@/i18n/config"
 import { t } from "@/i18n/t"
 import { useTx } from "@/lib/demo/chain"
@@ -18,13 +20,12 @@ import { cn } from "@/lib/utils"
 
 import { AmountField } from "./amount-field"
 import { useAppCopy } from "./app-provider"
-import { Disclaimer } from "./disclaimer"
 import { PositionPreview } from "./position-preview"
 import { TxFeedback } from "./tx-feedback"
 
 export function OpenVault() {
   const demo = useDemo()
-  const { app, locale, disclaimer } = useAppCopy()
+  const { app, locale } = useAppCopy()
   const o = app.open
   const router = useRouter()
   const tx = useTx()
@@ -89,10 +90,7 @@ export function OpenVault() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-3xl font-extrabold tracking-display sm:text-4xl">{o.title}</h1>
-        <p className="mt-1 max-w-2xl text-muted-foreground">{o.intro}</p>
-      </div>
+      <h1 className="text-3xl font-extrabold tracking-display sm:text-4xl">{o.title}</h1>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-start">
         <form
@@ -105,10 +103,12 @@ export function OpenVault() {
         >
           <fieldset className="rounded-3xl border bg-card p-5 sm:p-6" disabled={tx.busy}>
             <legend className="sr-only">{o.collateralTitle}</legend>
-            <h2 className="text-lg font-bold" aria-hidden="true">
-              {o.collateralTitle}
-            </h2>
-            <p className="mt-1 text-sm text-muted-foreground">{o.collateralHint}</p>
+            <div className="flex items-center gap-1">
+              <h2 className="text-lg font-bold" aria-hidden="true">
+                {o.collateralTitle}
+              </h2>
+              <InfoTip label={o.collateralHintLabel}>{o.collateralHint}</InfoTip>
+            </div>
             <div className="mt-5 flex flex-col gap-4">
               {COLLATERAL.map((c) => (
                 <AmountField
@@ -180,7 +180,6 @@ export function OpenVault() {
           </fieldset>
 
           <div className="flex flex-col gap-3">
-            <Disclaimer text={disclaimer} />
             <Button type="submit" size="lg" disabled={tx.busy} className="self-stretch sm:self-start">
               {tx.busy ? <Loader2Icon className="animate-spin" aria-hidden="true" /> : <LockIcon aria-hidden="true" />}
               {o.submit}
@@ -190,9 +189,17 @@ export function OpenVault() {
         </form>
 
         <aside aria-labelledby="preview-title" className="rounded-3xl border bg-card p-5 sm:p-6 lg:sticky lg:top-24">
-          <h2 id="preview-title" className="text-lg font-bold">
-            {o.previewTitle}
-          </h2>
+          <div className="flex items-center gap-1">
+            <h2 id="preview-title" className="text-lg font-bold">
+              {o.previewTitle}
+            </h2>
+            <InfoTip label={o.howLabel}>
+              <p>{o.howBody}</p>
+              <Link href={href(locale, "/how-it-works")} className="mt-2 inline-block font-bold text-primary-ink underline underline-offset-4">
+                {o.howLink}
+              </Link>
+            </InfoTip>
+          </div>
           {hasCollateral ? (
             <PositionPreview after={position} prices={prices} params={demo.params} className="mt-4" />
           ) : (

@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch"
 import { t } from "@/i18n/t"
 import { advanceTime } from "@/lib/demo/ops"
 import { resetDemo, setSettings, useDemo } from "@/lib/demo/store"
+import { NETWORK_NAME } from "@/lib/demo/tokens"
 import { formatDateTime } from "@/lib/format"
 
 import { useAppCopy } from "./app-provider"
@@ -38,15 +39,23 @@ export function DemoControls() {
       }}
     >
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
+        {/* One pill for the network and the demo controls (brand guidelines §8: one bar in the app). */}
+        <Button variant="outline" size="sm" aria-label={c.open} title={c.open} className="gap-2 bg-card px-3">
+          <span aria-hidden="true" className="size-2 rounded-full bg-success" />
+          <span aria-hidden="true" className="hidden md:inline">
+            {NETWORK_NAME}
+          </span>
           <SlidersHorizontalIcon aria-hidden="true" />
-          {c.open}
           {demo.settings.failNext || demo.settings.slow ? <span className="size-2 rounded-full bg-warning" aria-hidden="true" /> : null}
         </Button>
       </DialogTrigger>
       <DialogContent closeLabel={app.close} className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-xl font-extrabold">{c.title}</DialogTitle>
+          <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <span aria-hidden="true" className="size-2 rounded-full bg-success" />
+            {NETWORK_NAME}
+          </p>
           <DialogDescription className="sr-only">{c.resetHint}</DialogDescription>
         </DialogHeader>
 

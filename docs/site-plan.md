@@ -1,8 +1,8 @@
-# VaultLend by Monark: site plan
+# VaultLend: site plan
 
 VaultLend is the **protocol and risk view** of the Monark DeFi demo family. Its siblings cover swapping (Fluidswap), supplying for yield (Yieldmine) and a guided single-loan borrower experience (BorrowX). VaultLend looks at the whole lending protocol at once: every vault's health, what happens when prices move, how liquidations work, and how risk parameters are set.
 
-This plan was written before building and is kept in sync with what shipped (see section 12).
+This plan was written before building and is kept in sync with what shipped (see section 12), including the simplification pass (`docs/simplification.md`).
 
 Sources: the Lovable app on `main` (`src/`), https://vaultlend.monark.io/, and the authoritative project page https://www.monark.io/en/project/defi-loans ("A lending platform where users deposit collateral and borrow tokens. Smart contracts manage interest, health ratios, and liquidations. Useful to simulate MakerDAO-style loans on testnet. Can include dashboards, alerts, and repayment logic. Emphasizes DeFi risk management and user experience." Its modules: web interface, wallet authentication, collateral vault contract, borrowing logic with a pre-trade simulation tool, interest accrual, liquidation engine and health monitoring, transaction history and vault analytics, multi-asset collateral and governance-based parameter adjustments).
 
@@ -63,8 +63,9 @@ Supporting benefits (outcomes):
 
 - **Headline (EN):** Crash the price. Watch the vaults react.
 - **Headline (FR):** Faites chuter le prix. Regardez les coffres réagir.
-- **Subheadline (EN):** VaultLend is Monark's open lending sandbox on testnet. Lock collateral, borrow, then stress-test every vault on the protocol to see exactly when, why and how liquidations happen.
-- **Subheadline (FR):** VaultLend est le bac à sable de prêt ouvert de Monark, sur testnet. Déposez une garantie, empruntez, puis mettez chaque coffre du protocole sous pression pour voir quand, pourquoi et comment surviennent les liquidations.
+- **Subheadline (EN):** Lock collateral, borrow, then move the oracle and see exactly when a vault gets liquidated.
+- **Subheadline (FR):** Déposez une garantie, empruntez, puis faites bouger l'oracle : voyez à quel moment un coffre est liquidé.
+- No eyebrow and no disclaimer line in the hero (the Demo chip and the footer notice cover it).
 - **Primary CTA:** "Open the risk console" / « Ouvrir la console de risque » → `/[locale]/app`.
 - **Secondary CTA:** "How liquidations work" / « Comprendre les liquidations » → `/[locale]/how-it-works`.
 - **Hero visual:** the product itself, built in code: a live **mini risk map** (a horizontal health-factor ruler with nine vault dots) and a tETH price slider with a "−25% flash crash" chip. Dragging the slider slides the dots left across the amber band and the 1.00 liquidation line, and a counter shows how many vaults become liquidatable. It proves the headline in one gesture, which no photo can do. The mesh butterfly sits large and cropped behind it (see §8).
@@ -75,9 +76,9 @@ All routes live under `/en/…` and `/fr/…`; `/` redirects to the preferred la
 
 | Route | Purpose | Sections (in order) |
 |-|-|-|
-| `/` (home) | Explain the product in one screen and send people to the console | Hero with live mini risk map → Three outcomes → Anatomy of a liquidation (4-step line-art diagram) → Inside the console (four product vignettes, each linking into the app) → Learn it together (photo + audiences) → FAQ → Closing CTA |
-| `/how-it-works` | The mechanics reference for students: the formulas behind every number in the console | Intro → Health factor (formula + worked example) → Liquidation price → Interest over time → Liquidations (close factor, bonus, worked receipt) → Risk parameters table → Governance and timelock → Glossary → CTA. **Justified** because the audience is explicitly students learning the mechanics (project page), and putting the formulas on the home page would bury the product. |
-| `/app` | Risk console (dashboard) | App bar (network, disclaimer, protocol clock, demo controls) → app sub-nav → protocol stats → risk map → oracle stress test + alerts → vault table with filters |
+| `/` (home) | Explain the product in one screen and send people to the console | Hero with live mini risk map → Anatomy of a liquidation (4-step line-art diagram) → Four instruments (product vignettes, each linking into the app) → Built for study groups (photo + 3 audiences) → FAQ (4) → Closing CTA (heading + button). The "outcomes" section was removed in the simplification pass (it restated the vignettes). |
+| `/how-it-works` | The mechanics reference for students: the formulas behind every number in the console | One-line intro → Health factor (formula; worked example and balance diagram behind a disclosure) → Liquidation price → Interest over time (examples behind disclosures) → Liquidations (close factor, bonus; worked receipt behind a disclosure) → Risk parameters table → Governance and timelock → Glossary → CTA (heading + button). **Justified** because the audience is explicitly students learning the mechanics (project page), and putting the formulas on the home page would bury the product. |
+| `/app` | Risk console (dashboard) | One app bar (section nav, "● Sepolia testnet" pill opening Demo controls with the protocol clock, "Open a vault") → protocol stats → risk map (info icon) → oracle stress test + alerts (5 latest) → vault table with filters (6 riskiest + "Show all") |
 | `/app/open` | Open a vault with the pre-trade simulator | Collateral inputs (multi-asset) → debt asset and amount → live preview (HF, liquidation prices, borrow capacity) → submit |
 | `/app/vaults/[id]` | One vault: health, history, actions | Header with status → health gauge → collateral table with liquidation prices → debt and interest → actions (yours: deposit, withdraw, borrow, repay; others: liquidate when HF < 1) → history |
 | `/app/liquidations` | The liquidator's desk | Liquidatable vaults with max repay and bonus → near-liquidation watchlist → recent liquidations |
@@ -86,9 +87,9 @@ All routes live under `/en/…` and `/fr/…`; `/` redirects to the preferred la
 | `/pricing` | **Internal strategy review only**: never linked, noindex, not in sitemap | Plan, costs, partners, reasoning |
 | 404 | Localized not-found | Vertical Monark logo, message, home and console links |
 
-**Header:** "VaultLend by Monark" pairing · links: Overview, How it works, Risk console · EN/FR switch · theme toggle · primary pill "Open the console" (inside the app it becomes the `connect-wallet` control) · "Demo · simulated data" badge inside the app.
+**Header** (standard, brand guidelines §2 and §10): butterfly mark + "VaultLend" on one line (no "by Monark") · links left after the brand: Overview, How it works, Risk console · right: Demo chip → EN/FR pill → theme toggle → "Open the console" (inside the app, the `connect-wallet` control). Below `lg`: brand + menu button; the sheet holds everything else.
 
-**Footer:** standard three bands. Product band: one-line description + Overview, How it works, Risk console, Credits. A "Part of the Monark DeFi demos" row linking Fluidswap, Yieldmine and BorrowX (`*.monark.io`). Monark band: horizontal logo, tagline, project page, GitHub repo, socials. Legal line: © year Monark · Open source, "Demo · simulated data", testnet disclaimer, photo credits link.
+**Footer:** standard three bands. Product band: one-line description + Overview, How it works, Risk console, Credits. A "Part of the Monark DeFi demos" row linking Fluidswap, Yieldmine and BorrowX (`*.monark.io`). Monark band: "VaultLend is built by Monark" / « VaultLend est conçu par Monark », horizontal logo, tagline, project page, GitHub repo, socials. Legal line: © year Monark · Open source, "Demo · simulated data", photo credits link. The testnet disclaimer appears only in the wallet prompt of value-moving transactions.
 
 ## 5. Feature highlights
 
@@ -119,23 +120,18 @@ The full copy lives in `src/i18n/dictionaries/en.ts` and `fr.ts`; this is the dr
 
 | Section | EN | FR |
 |-|-|-|
-| Eyebrow | Lending protocol sandbox · testnet | Bac à sable de protocole de prêt · testnet |
 | Headline | Crash the price. Watch the vaults react. | Faites chuter le prix. Regardez les coffres réagir. |
 | Sub | (see §3) | (see §3) |
 | CTAs | Open the risk console · How liquidations work | Ouvrir la console de risque · Comprendre les liquidations |
 | Hero widget | tETH oracle price · Flash crash −25% · Reset · "{n} of 9 vaults liquidatable" | Prix oracle du tETH · Krach éclair −25 % · Réinitialiser · « {n} coffres sur 9 liquidables » |
-| Outcomes title | What you'll understand in ten minutes | Ce que vous aurez compris en dix minutes |
-| Outcome 1 | **How far a price can fall.** Every vault shows its health factor and a liquidation price per asset, before and after each action. | **Jusqu'où un prix peut tomber.** Chaque coffre affiche son facteur de santé et un prix de liquidation par actif, avant et après chaque action. |
-| Outcome 2 | **Liquidations from both sides.** Push a vault under 1.00, then repay its debt as a liquidator and collect the bonus. | **La liquidation des deux côtés.** Faites passer un coffre sous 1,00, puis remboursez sa dette en tant que liquidateur et encaissez le bonus. |
-| Outcome 3 | **What a rule change really does.** Preview a new threshold on every vault, then queue it behind a timelock. | **L'effet réel d'une règle.** Prévisualisez un nouveau seuil sur tous les coffres, puis soumettez-le à un délai de grâce. |
 | Anatomy title | Anatomy of a liquidation | Anatomie d'une liquidation |
-| Steps | 1 The price falls: the oracle marks the collateral down. 2 Health drops below 1.00: the collateral no longer covers the debt with its safety margin. 3 A liquidator repays: up to half of the debt, in the debt token. 4 Collateral changes hands: the liquidator receives the same value in collateral plus a bonus, and the vault is healthier. | 1 Le prix baisse : l'oracle revoit la garantie à la baisse. 2 La santé passe sous 1,00 : la garantie ne couvre plus la dette avec sa marge de sécurité. 3 Un liquidateur rembourse : jusqu'à la moitié de la dette, dans le jeton emprunté. 4 La garantie change de mains : le liquidateur reçoit la même valeur en garantie, plus un bonus, et le coffre se rétablit. |
-| Console title | Inside the risk console | Dans la console de risque |
+| Steps | 1 The price falls: 6 tETH is suddenly worth $14,400, not $19,200. 2 Health drops below 1.00: the collateral no longer covers the debt with its margin. 3 A liquidator repays: up to half of the debt. 4 Collateral changes hands: that value in collateral, plus a 5% bonus. | Mêmes étapes, textes courts équivalents (voir `fr.ts`). |
+| Console title | Four instruments, one protocol | Quatre instruments, un protocole |
 | Vignettes | Risk map · Pre-trade simulator · Liquidation desk · Governance sandbox (one line each, see dictionaries) | Carte des risques · Simulateur avant transaction · Bureau des liquidations · Bac à sable de gouvernance |
 | Together title | Built for study groups and workshops | Pensé pour les groupes d'étude et les ateliers |
-| Together body | Run it on a projector, give every student a vault, then crash tETH together and discuss who got liquidated and why. Everything resets in one click. | Projetez-la en classe, donnez un coffre à chaque étudiant, puis faites chuter le tETH ensemble et discutez de qui a été liquidé, et pourquoi. Tout se réinitialise en un clic. |
-| FAQ | 5 entries: Is any of this real money? · How is the health factor calculated? · Why would anyone liquidate a vault? · How is VaultLend different from BorrowX? · Can I build on it? | 5 entrées équivalentes |
-| Closing CTA | Break a protocol before lunch. · Open the risk console | Faites tomber un protocole avant midi. · Ouvrir la console de risque |
+| Audiences | Students · Workshop hosts · Builders (one 6–8-word line each, no body paragraph) | Étudiants · Animateurs d'ateliers · Développeurs |
+| FAQ | 4 entries: Is any of this real money? · Why would anyone liquidate a vault? · How is VaultLend different from BorrowX? · Can I build on it? (the health-factor question lives on `/how-it-works`) | 4 entrées équivalentes |
+| Closing CTA | Break a protocol before lunch. · Open the risk console (no body line) | Faites tomber un protocole avant midi. · Ouvrir la console de risque |
 
 ### App: key strings (full set in dictionaries)
 
@@ -143,23 +139,23 @@ The full copy lives in `src/i18n/dictionaries/en.ts` and `fr.ts`; this is the dr
 |-|-|-|
 | Console title | Risk console | Console de risque |
 | Stats | Total collateral · Total debt · Debt at risk · Liquidatable vaults | Garanties totales · Dette totale · Dette à risque · Coffres liquidables |
-| Stress test | Oracle stress test · Move a price and watch every vault respond. · Flash crash tETH −25% · Broad sell-off −15% · Reset prices | Test de résistance des oracles · Faites bouger un prix et observez la réaction de chaque coffre. · Krach éclair tETH −25 % · Repli général −15 % · Réinitialiser les prix |
-| Alerts empty | All quiet. No vault has changed status yet. | Tout est calme. Aucun coffre n'a changé de statut pour l'instant. |
-| Liquidations empty | Nothing to liquidate right now. Every vault is above 1.00. Try a price shock in the stress test. | Rien à liquider pour le moment. Tous les coffres sont au-dessus de 1,00. Essayez un choc de prix dans le test de résistance. |
+| Stress test | Oracle stress test · Flash crash tETH −25% · Broad sell-off −15% · Reset prices | Test de résistance des oracles · Krach éclair tETH −25 % · Repli général −15 % · Réinitialiser les prix |
+| Alerts empty | All quiet. | Tout est calme. |
+| Liquidations empty | Nothing to liquidate right now. + "Open the stress test" | Rien à liquider pour le moment. + « Ouvrir le test de résistance » |
 | Vault table empty (filter) | No vault matches this filter. | Aucun coffre ne correspond à ce filtre. |
 | Tx pending / confirmed / failed | Waiting for the network… / Confirmed / Transaction failed | En attente du réseau… / Confirmée / Échec de la transaction |
-| Rejected | You rejected the request in your wallet. Nothing was sent. | Vous avez refusé la demande dans votre portefeuille. Rien n'a été envoyé. |
+| Rejected | You rejected the request. Nothing was sent. | Vous avez refusé la demande. Rien n'a été envoyé. |
 | Reverted | The network reverted the transaction. Your tokens were not moved. | Le réseau a annulé la transaction. Vos jetons n'ont pas bougé. |
-| Not liquidatable | Vault is healthy again (HF ≥ 1.00), so it can no longer be liquidated. | Le coffre est redevenu sain (FS ≥ 1,00) : il ne peut plus être liquidé. |
-| Vault not found | We can't find this vault. It may have been created in another browser, or the demo was reset. | Nous ne trouvons pas ce coffre. Il a peut-être été créé dans un autre navigateur, ou la démo a été réinitialisée. |
-| Storage error | Your browser is blocking local storage, so the demo will reset when you leave. | Votre navigateur bloque le stockage local : la démo sera réinitialisée à votre départ. |
-| Disclaimer | Testnet demo · not financial advice · no real funds | Démo sur testnet · pas un conseil financier · aucun fonds réel |
+| Not liquidatable | The vault is healthy again, so it can no longer be liquidated. | Le coffre est redevenu sain : il ne peut plus être liquidé. |
+| Vault not found | We can't find this vault. + "Back to the console" | Nous ne trouvons pas ce coffre. + « Retour à la console » |
+| Storage error | Local storage is blocked, so the demo resets when you leave. | Le stockage local est bloqué : la démo repartira à zéro à votre départ. |
+| Disclaimer (wallet prompt of value-moving transactions only) | Testnet demo · not financial advice · no real funds | Démo sur testnet · pas un conseil financier · aucun fonds réel |
 
 ## 8. Aesthetics (within the Monark guidelines)
 
 Colour, type, logo, header and footer are fixed by `monark-brand-guidelines.md` (cream and espresso tokens pasted from §3, flat orange, Nunito Sans, pills, borders not shadows). What this site decides:
 
-- **Layouts and rhythm.** Home: a two-column hero (copy left, live risk widget right, stacked on mobile), then alternating dense and airy bands: outcomes (three columns), a full-width diagram band, a 2×2 grid of product vignettes, a photo band, FAQ, a short closing CTA. The console is a dense, instrument-like layout on a 6xl grid: stat tiles, the full-width risk map, then a two-column stress test and alerts, then the vault table. Monospace only for addresses and hashes; numbers use tabular figures.
+- **Layouts and rhythm.** Home: a two-column hero (copy left, live risk widget right, stacked on mobile), then alternating dense and airy bands: a full-width diagram band, a 2×2 grid of product vignettes, a photo band, FAQ, a short closing CTA. The console is a dense, instrument-like layout on a 6xl grid under one compact app bar: stat tiles, the full-width risk map, then a two-column stress test and alerts, then the vault table. Monospace only for addresses and hashes; numbers use tabular figures.
 - **Hero visual:** the live mini risk map (see §3), in a card with the ruler's three bands tinted very lightly in the status colours, plus labels.
 - **Monark illustrations:** the mesh butterfly **once**, on the home hero, large, cropped at the top right at low opacity behind the widget, with no gradient. The branded section divider (orange line with end circles) once on the home page and once on `/how-it-works`.
 - **New line-art diagrams** (flat orange 2px strokes, rounded caps, drawn in JSX): "Anatomy of a liquidation" four-step strip; health-factor balance diagram (collateral × threshold vs debt) on `/how-it-works`; the liquidation receipt bar (debt covered vs bonus); the timelock timeline.
@@ -206,3 +202,5 @@ Decisions taken while building, unattended:
 - **Registry components**: button, dialog, sheet, tabs, dropdown, input, label, switch, accordion, tooltip, sonner, wallet, connect-wallet, token-amount, network-badge and tx-status come from `@monark/ui`, restyled to the 2026 pill look (and with localizable labels); the slider was re-themed; select was not needed (pill toggles instead).
 - **Brand kit note**: the vertical logo files are named for the background they are *not* meant for (`-light` has white lettering), so the 404 swaps them.
 - **Dependencies beyond the brief's list**: `radix-ui` and `class-variance-authority` (registry primitives), `next-themes` (theme toggle), `sonner` (toasts), `react-jazzicon` (wallet avatars from the registry `wallet` component), `tw-animate-css` and `shadcn` (registry theme CSS). No charting library was needed: the risk map is plain HTML/CSS.
+- **Simplification pass** (see `docs/simplification.md`): one app bar (section nav + network pill opening Demo controls + "Open a vault"); the testnet notice only in the wallet prompt of value-moving transactions; page intros and panel descriptions moved into info icons (`ui/info-tip.tsx`); worked examples on `/how-it-works` behind disclosures (`ui/disclosure.tsx`); vault table paged (6 + "Show all"); on your own vault the actions panel carries the health preview (no duplicate left panel; actions first on phones); history hashes in row tooltips; pending and failed states said once.
+- **Header/footer standard**: `site/brand.tsx`, `site/demo-chip.tsx`, `site/header.tsx`, `site/nav-links.tsx`, `site/mobile-menu.tsx` and `site/theme.tsx` mirror Splitflow's reference; the footer's Monark band opens with "VaultLend is built by Monark".

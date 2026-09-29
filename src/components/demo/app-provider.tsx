@@ -19,7 +19,6 @@ export interface AppCopy {
   seed: Dictionary["seed"]
   status: Dictionary["common"]["status"]
   disclaimer: string
-  demoBadge: string
 }
 
 const AppContext = createContext<AppCopy | null>(null)

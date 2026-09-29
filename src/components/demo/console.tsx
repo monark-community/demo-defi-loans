@@ -1,12 +1,13 @@
 "use client"
 
-import { ArrowRightIcon, BellIcon, PlusIcon, RotateCcwIcon } from "lucide-react"
+import { ArrowRightIcon, BellIcon, ChevronDownIcon, PlusIcon, RotateCcwIcon } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 
 import { dotSize, ResponsiveRuler } from "@/components/risk/health-ruler"
 import { StatusChip, statusText } from "@/components/risk/status-chip"
 import { Button } from "@/components/ui/button"
+import { InfoTip } from "@/components/ui/info-tip"
 import { Slider } from "@/components/ui/slider"
 import { href } from "@/i18n/config"
 import { t } from "@/i18n/t"
@@ -31,6 +32,7 @@ import { useAppCopy } from "./app-provider"
 import { CollateralList, Owner } from "./vault-bits"
 
 type Filter = "all" | "yours" | "at_risk" | "liquidatable"
+const PAGE = 6
 
 export function Console() {
   const demo = useDemo()
@@ -44,10 +46,7 @@ export function Console() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-extrabold tracking-display sm:text-4xl">{c.title}</h1>
-          <p className="mt-1 text-muted-foreground">{c.intro}</p>
-        </div>
+        <h1 className="text-3xl font-extrabold tracking-display sm:text-4xl">{c.title}</h1>
         <Button asChild className="sm:hidden">
           <Link href={href(locale, "/app/open")}>
             <PlusIcon aria-hidden="true" />
@@ -120,11 +119,11 @@ function RiskMap({ demo }: { demo: DemoState }) {
 
   return (
     <section id="risk-map" aria-labelledby="map-title" className="rounded-3xl border bg-card p-5 sm:p-6">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+      <div className="flex items-center gap-1">
         <h2 id="map-title" className="text-xl font-bold">
           {m.title}
         </h2>
-        <p className="text-sm text-muted-foreground">{m.desc}</p>
+        <InfoTip label={m.infoLabel}>{m.info}</InfoTip>
       </div>
       <div className="mt-5 pt-1">
         <ResponsiveRuler
@@ -157,7 +156,6 @@ function StressTest({ demo }: { demo: DemoState }) {
       <h2 id="stress-title" className="text-xl font-bold">
         {s.title}
       </h2>
-      <p className="mt-1 text-sm text-muted-foreground">{s.desc}</p>
 
       <div className="mt-5 flex flex-col gap-4">
         {COLLATERAL.map((asset) => {
@@ -227,7 +225,7 @@ const ALERT_STYLE: Record<AlertEvent["kind"], string> = {
 function Alerts({ alerts }: { alerts: AlertEvent[] }) {
   const { app, locale } = useAppCopy()
   const a = app.console.alerts
-  const shown = alerts.slice(0, 7)
+  const shown = alerts.slice(0, 5)
   return (
     <section aria-labelledby="alerts-title" className="flex flex-col rounded-3xl border bg-card p-5 sm:p-6">
       <div className="flex items-center gap-2">
@@ -236,7 +234,6 @@ function Alerts({ alerts }: { alerts: AlertEvent[] }) {
           {a.title}
         </h2>
       </div>
-      <p className="mt-1 text-sm text-muted-foreground">{a.desc}</p>
       {shown.length === 0 ? (
         <p className="mt-6 rounded-2xl border border-dashed p-6 text-center text-sm text-muted-foreground">{a.empty}</p>
       ) : (
@@ -269,9 +266,10 @@ function VaultTable({ demo }: { demo: DemoState }) {
   const { app, locale, status } = useAppCopy()
   const tb = app.console.table
   const [filter, setFilter] = useState<Filter>("all")
+  const [showAll, setShowAll] = useState(false)
   const prices = statePrices(demo)
 
-  const rows = demo.vaults
+  const allRows = demo.vaults
     .map((v) => ({ v, hf: healthFactor(v, prices, demo.params) }))
     .sort((a, b) => a.hf - b.hf)
     .filter(({ v, hf }) => {
@@ -280,6 +278,9 @@ function VaultTable({ demo }: { demo: DemoState }) {
       if (filter === "liquidatable") return statusOf(hf) === "liquidatable"
       return true
     })
+  // Long lists are paged (brand guidelines §8): the riskiest vaults first, the rest on demand.
+  const rows = showAll ? allRows : allRows.slice(0, PAGE)
+  const hidden = allRows.length - PAGE
 
   return (
     <section aria-labelledby="vaults-title" className="rounded-3xl border bg-card">
@@ -289,7 +290,10 @@ function VaultTable({ demo }: { demo: DemoState }) {
         </h2>
         <div role="group" aria-label={tb.filterLabel} className="flex flex-wrap gap-1.5">
           {(Object.keys(tb.filters) as Filter[]).map((f) => (
-            <Button key={f} size="xs" variant={filter === f ? "default" : "outline"} aria-pressed={filter === f} onClick={() => setFilter(f)} className="h-8 px-3">
+            <Button key={f} size="xs" variant={filter === f ? "default" : "outline"} aria-pressed={filter === f} onClick={() => {
+                setFilter(f)
+                setShowAll(false)
+              }} className="h-8 px-3">
               {tb.filters[f]}
             </Button>
           ))}
@@ -358,6 +362,14 @@ function VaultTable({ demo }: { demo: DemoState }) {
               )
             })}
           </ul>
+          {hidden > 0 ? (
+            <div className="border-t p-3 text-center">
+              <Button size="sm" variant="ghost" aria-expanded={showAll} onClick={() => setShowAll((x) => !x)}>
+                {showAll ? tb.showLess : t(tb.showAll, { n: allRows.length })}
+                <ChevronDownIcon className={cn("transition-transform", showAll && "rotate-180")} aria-hidden="true" />
+              </Button>
+            </div>
+          ) : null}
         </>
       )}
     </section>
