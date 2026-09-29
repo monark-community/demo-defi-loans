@@ -1,4 +1,5 @@
 import Link from "next/link"
+import type { ComponentProps } from "react"
 
 import { HF_AT_RISK, HF_LIQUIDATION } from "@/lib/demo/tokens"
 import { RULER_MAX, rulerPosition, statusOf } from "@/lib/demo/risk"
@@ -179,6 +180,27 @@ export function HealthRuler({
       </p>
     ) : null}
     </div>
+  )
+}
+
+/**
+ * Two rulers: lanes computed for a phone-width track below `md`, and for a
+ * wide track above it. The hidden one is display:none, so it is out of the
+ * accessibility tree and focus order.
+ */
+export function ResponsiveRuler({
+  narrowWidth = 330,
+  ...props
+}: ComponentProps<typeof HealthRuler> & { narrowWidth?: number }) {
+  return (
+    <>
+      <div className="md:hidden">
+        <HealthRuler {...props} assumedWidth={narrowWidth} />
+      </div>
+      <div className="hidden md:block">
+        <HealthRuler {...props} />
+      </div>
+    </>
   )
 }
 

@@ -49,8 +49,9 @@ function AlertWatcher() {
       if (seen.current.has(a.id)) continue
       seen.current.add(a.id)
       if (!a.yours || demo.wallet.status !== "connected") continue
-      // The console lists every alert in its own live panel; a toast there would sit on top of it.
-      if (pathname === href(locale, "/app")) continue
+      // The console lists every alert in its own live panel, and the vault's own page shows its
+      // status in place: a toast there would sit on top of the very thing it reports.
+      if (pathname === href(locale, "/app") || pathname === href(locale, `/app/vaults/${a.vaultId}`)) continue
       const message = t(app.console.alerts.toast[a.kind], { n: a.vaultNumber, hf: formatHf(a.hf, locale) })
       const action = { label: app.console.alerts.toastAction, onClick: () => router.push(href(locale, `/app/vaults/${a.vaultId}`)) }
       if (a.kind === "recovered") toast.success(message, { action })

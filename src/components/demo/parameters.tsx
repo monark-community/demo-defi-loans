@@ -3,9 +3,8 @@
 import { FastForwardIcon, GavelIcon, Loader2Icon, TimerIcon } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
-import { toast } from "sonner"
 
-import { dotSize, HealthRuler } from "@/components/risk/health-ruler"
+import { dotSize, ResponsiveRuler } from "@/components/risk/health-ruler"
 import { StatusChip } from "@/components/risk/status-chip"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -84,7 +83,7 @@ export function Parameters() {
         <p className="border-t px-5 py-3 text-xs text-muted-foreground sm:px-6">{t(p.closeFactor, { pct: formatPct(demo.params.closeFactor, locale, 0) })}</p>
       </section>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-start">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-start">
         <ProposeForm />
         <ProposalList />
       </div>
@@ -102,6 +101,7 @@ function ProposeForm() {
   const [param, setParam] = useState<ParamKey>("liqThreshold")
   const [input, setInput] = useState("")
   const [touched, setTouched] = useState(false)
+  const [doneLabel, setDoneLabel] = useState<string | undefined>(undefined)
   if (!demo) return null
 
   const isDebt = (DEBT as string[]).includes(asset)
@@ -164,7 +164,7 @@ function ProposeForm() {
         })
     )
     if (ok) {
-      toast.success(t(f.done, { n: newId.replace(/^p/, "") }))
+      setDoneLabel(t(f.done, { n: newId.replace(/^p/, "") }))
       setInput("")
       setTouched(false)
     }
@@ -260,20 +260,19 @@ function ProposeForm() {
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <p className="text-sm font-bold">{f.impactTitle}</p>
             <p aria-live="polite" className={cn("text-sm font-bold", moved.length ? "text-warning" : "text-muted-foreground")}>
-              {next === null ? "" : moved.length ? t(f.impactSome, { n: moved.length }) : f.impactNone}
+              {next === null ? "" : moved.length === 1 ? f.impactOne : moved.length ? t(f.impactSome, { n: moved.length }) : f.impactNone}
             </p>
           </div>
-          <div className="mt-3 overflow-x-auto">
-            <div className="min-w-[30rem]">
-              <HealthRuler
-                dots={dots}
-                zones={app.console.map.zones}
-                lineLabel={app.console.map.line}
-                formatTick={(v) => formatHf(v, locale)}
-                assumedWidth={560}
-                legend={false}
-              />
-            </div>
+          <div className="mt-3">
+            <ResponsiveRuler
+              dots={dots}
+              zones={app.console.map.zones}
+              lineLabel={app.console.map.line}
+              formatTick={(v) => formatHf(v, locale)}
+              assumedWidth={560}
+              narrowWidth={290}
+              legend={false}
+            />
           </div>
           {moved.length ? (
             <ul className="mt-3 flex flex-col gap-1.5 text-sm">
@@ -296,7 +295,7 @@ function ProposeForm() {
           {tx.busy ? <Loader2Icon className="animate-spin" aria-hidden="true" /> : <TimerIcon aria-hidden="true" />}
           {f.submit}
         </Button>
-        <TxFeedback state={tx.state} onRetry={() => void submit()} onDismiss={tx.reset} />
+        <TxFeedback state={tx.state} confirmedLabel={doneLabel} onRetry={() => void submit()} onDismiss={tx.reset} />
       </form>
     </section>
   )
@@ -335,8 +334,8 @@ function ProposalRow({ proposal: p, clock }: { proposal: Proposal; clock: string
   const fmt = (v: number) => formatPct(v, locale)
 
   const execute = async () => {
-    const ok = await tx.run({ title: t(pr.executeSummary, { n: p.number }), movesValue: false }, (hash) => executeProposal(p.id, hash))
-    if (ok) toast.success(t(pr.doneExecute, { n: p.number }))
+    // The row turns "Executed" and keeps the confirmation inline: no toast over the list.
+    await tx.run({ title: t(pr.executeSummary, { n: p.number }), movesValue: false }, (hash) => executeProposal(p.id, hash))
   }
 
   return (
@@ -378,9 +377,15 @@ function ProposalRow({ proposal: p, clock }: { proposal: Proposal; clock: string
             </Button>
           </div>
           {!ready ? <p className="text-xs text-muted-foreground">{pr.fastForwardHint}</p> : null}
-          <TxFeedback state={tx.state} onRetry={() => void execute()} onDismiss={tx.reset} />
         </div>
       )}
+      <TxFeedback
+        state={tx.state}
+        confirmedLabel={t(pr.doneExecute, { n: p.number })}
+        onRetry={() => void execute()}
+        onDismiss={tx.reset}
+        className="mt-3"
+      />
     </li>
   )
 }

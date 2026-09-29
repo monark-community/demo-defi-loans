@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/how-it-w
 }
 
 function Formula({ children }: { children: ReactNode }) {
-  return <p className="mt-5 rounded-2xl border-l-4 border-primary bg-card px-5 py-4 font-mono text-sm leading-relaxed sm:text-base">{children}</p>
+  return <p className="mt-5 rounded-2xl border-l-4 border-primary bg-card px-5 py-4 font-mono text-sm leading-relaxed break-words sm:text-base">{children}</p>
 }
 
 function Block({ id, title, children }: { id: string; title: string; children: ReactNode }) {
@@ -62,7 +62,7 @@ export default async function HowItWorksPage({ params }: PageProps<"/[locale]/ho
         <p className="mt-4 text-lg text-muted-foreground">{h.intro}</p>
       </header>
 
-      <div className="mt-12 grid gap-12 lg:grid-cols-[14rem_minmax(0,1fr)]">
+      <div className="mt-12 grid grid-cols-1 gap-12 lg:grid-cols-[14rem_minmax(0,1fr)]">
         <nav aria-label={h.toc} className="lg:sticky lg:top-24 lg:self-start">
           <p className="eyebrow text-muted-foreground">{h.toc}</p>
           <ol className="mt-3 flex flex-wrap gap-2 lg:flex-col lg:gap-1">

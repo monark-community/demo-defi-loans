@@ -2,7 +2,6 @@
 
 import { Loader2Icon } from "lucide-react"
 import { useState } from "react"
-import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -61,6 +60,7 @@ function ActionForm({ action, vault }: { action: Action; vault: Vault }) {
   const [asset, setAsset] = useState<CollateralSymbol>(action === "withdraw" ? (held[0] ?? "tETH") : "tETH")
   const [input, setInput] = useState("")
   const [touched, setTouched] = useState(false)
+  const [doneLabel, setDoneLabel] = useState<string | undefined>(undefined)
   if (!demo) return null
 
   const prices = statePrices(demo)
@@ -132,7 +132,8 @@ function ActionForm({ action, vault }: { action: Action; vault: Vault }) {
       }
     )
     if (ok) {
-      toast.success(t(a.done[action], { amount: label, n: vault.number }))
+      // Confirmation stays inline (next to the button), so no toast sits on the preview.
+      setDoneLabel(t(a.done[action], { amount: label, n: vault.number }))
       setInput("")
       setTouched(false)
     }
@@ -190,7 +191,7 @@ function ActionForm({ action, vault }: { action: Action; vault: Vault }) {
         {tx.busy ? <Loader2Icon className="animate-spin" aria-hidden="true" /> : null}
         {t(a.submit[action], { asset: token })}
       </Button>
-      <TxFeedback state={tx.state} onRetry={() => void submit()} onDismiss={tx.reset} />
+      <TxFeedback state={tx.state} confirmedLabel={doneLabel} onRetry={() => void submit()} onDismiss={tx.reset} />
     </form>
   )
 }

@@ -51,7 +51,10 @@ export function TxFeedback({
       ) : null}
 
       {state.phase === "confirmed" && state.hash ? (
-        <TxStatus status="confirmed" hash={state.hash} label={confirmedLabel ?? tx.confirmed} className="vl-stamp self-start" />
+        <div className="vl-stamp flex flex-col gap-1.5">
+          {confirmedLabel ? <p className="text-sm font-semibold text-success">{confirmedLabel}</p> : null}
+          <TxStatus status="confirmed" hash={state.hash} label={tx.confirmed} className="self-start" />
+        </div>
       ) : null}
 
       {state.phase === "failed" ? (

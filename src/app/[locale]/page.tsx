@@ -8,7 +8,7 @@ import { AnatomyStrip } from "@/components/diagrams/anatomy"
 import { ReceiptBar } from "@/components/diagrams/receipt-bar"
 import { TimelockTimeline } from "@/components/diagrams/timelock"
 import { StressWidget } from "@/components/home/stress-widget"
-import { HealthRuler } from "@/components/risk/health-ruler"
+import { ResponsiveRuler } from "@/components/risk/health-ruler"
 import { StatusChip } from "@/components/risk/status-chip"
 import { SectionDivider } from "@/components/site/section-divider"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -248,7 +248,8 @@ function Vignette({ k, locale, dict }: { k: string; locale: Locale; dict: Dictio
   if (k === "map") {
     const sample = [0.97, 1.19, 1.21, 1.3, 1.46, 1.63, 1.82, 2.66, 3.05]
     return (
-      <HealthRuler
+      <ResponsiveRuler
+        narrowWidth={260}
         dots={sample.map((hf, i) => ({ id: `s${i}`, hf, size: [22, 26, 16, 28, 24, 20, 30, 18, 14][i] ?? 18, yours: hf === 1.63, label: formatHf(hf, locale) }))}
         zones={m.zones}
         lineLabel={m.line}

@@ -3,7 +3,6 @@
 import { Loader2Icon, LockIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { href } from "@/i18n/config"
@@ -83,7 +82,7 @@ export function OpenVault() {
         })
     )
     if (ok && newId) {
-      toast.success(t(o.done, { n: number }))
+      // The new vault's own page is the confirmation (its history starts with "Opened").
       router.push(href(locale, `/app/vaults/${newId}`))
     }
   }
@@ -95,7 +94,7 @@ export function OpenVault() {
         <p className="mt-1 max-w-2xl text-muted-foreground">{o.intro}</p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-start">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-start">
         <form
           noValidate
           onSubmit={(e) => {

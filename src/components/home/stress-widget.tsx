@@ -3,7 +3,7 @@
 import { RotateCcwIcon, TrendingDownIcon } from "lucide-react"
 import { useState } from "react"
 
-import { HealthRuler, type RulerDot } from "@/components/risk/health-ruler"
+import { ResponsiveRuler, type RulerDot } from "@/components/risk/health-ruler"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { t } from "@/i18n/t"
@@ -75,7 +75,8 @@ export function StressWidget({
       </figcaption>
 
       <div className="mt-5" aria-label={copy.ruler} role="group">
-        <HealthRuler
+        <ResponsiveRuler
+          narrowWidth={290}
           dots={dots}
           zones={zones}
           lineLabel={lineLabel}
@@ -119,7 +120,7 @@ export function StressWidget({
           </Button>
           <p aria-live="polite" className="ml-auto text-sm font-bold tnum">
             {liquidatable > 0 ? (
-              <span className="text-danger">{t(copy.count, { n: liquidatable })}</span>
+              <span className="text-danger">{liquidatable === 1 ? copy.countOne : t(copy.count, { n: liquidatable })}</span>
             ) : (
               <span className="text-muted-foreground">{copy.countNone}</span>
             )}

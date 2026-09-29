@@ -4,7 +4,7 @@ import { ArrowRightIcon, BellIcon, PlusIcon, RotateCcwIcon } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 
-import { dotSize, HealthRuler } from "@/components/risk/health-ruler"
+import { dotSize, ResponsiveRuler } from "@/components/risk/health-ruler"
 import { StatusChip, statusText } from "@/components/risk/status-chip"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
@@ -63,7 +63,7 @@ export function Console() {
         <Stat
           label={c.stats.atRisk}
           value={formatUsd(stats.atRiskDebtUsd, locale, true)}
-          hint={t(c.stats.atRiskHint, { n: stats.atRisk + stats.liquidatable })}
+          hint={stats.atRisk + stats.liquidatable === 1 ? c.stats.atRiskHintOne : t(c.stats.atRiskHint, { n: stats.atRisk + stats.liquidatable })}
           tone={stats.atRiskDebtUsd > 0 ? "text-warning" : undefined}
         />
         <Stat
@@ -76,7 +76,7 @@ export function Console() {
 
       <RiskMap demo={demo} />
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
         <StressTest demo={demo} />
         <Alerts alerts={demo.alerts} />
       </div>
@@ -126,18 +126,16 @@ function RiskMap({ demo }: { demo: DemoState }) {
         </h2>
         <p className="text-sm text-muted-foreground">{m.desc}</p>
       </div>
-      <div className="mt-5 overflow-x-auto pt-1">
-        <div className="min-w-[36rem]">
-          <HealthRuler
-            dots={dots}
-            zones={m.zones}
-            lineLabel={m.line}
-            youLabel={m.you}
-            legend={m.size}
-            formatTick={(v) => formatHf(v, locale)}
-            assumedWidth={1000}
-          />
-        </div>
+      <div className="mt-5 pt-1">
+        <ResponsiveRuler
+          dots={dots}
+          zones={m.zones}
+          lineLabel={m.line}
+          youLabel={m.you}
+          legend={m.size}
+          formatTick={(v) => formatHf(v, locale)}
+          assumedWidth={1000}
+        />
       </div>
     </section>
   )

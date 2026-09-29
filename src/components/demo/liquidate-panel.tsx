@@ -2,7 +2,6 @@
 
 import { GavelIcon, Loader2Icon } from "lucide-react"
 import { useState } from "react"
-import { toast } from "sonner"
 
 import { StatusChip, statusText } from "@/components/risk/status-chip"
 import { Button } from "@/components/ui/button"
@@ -31,6 +30,7 @@ export function LiquidatePanel({ vault }: { vault: Vault }) {
   const [asset, setAsset] = useState<CollateralSymbol | null>(null)
   const [input, setInput] = useState("")
   const [touched, setTouched] = useState(false)
+  const [doneLabel, setDoneLabel] = useState<string | undefined>(undefined)
   if (!demo) return null
 
   const prices = statePrices(demo)
@@ -64,7 +64,8 @@ export function LiquidatePanel({ vault }: { vault: Vault }) {
       (hash) => liquidate(vault.id, amount, seizeAsset, hash)
     )
     if (ok) {
-      toast.success(t(l.done, { n: vault.number, amount: formatToken(q.seized, seizeAsset, locale) }))
+      // The receipt appears at the top of the vault page; the confirmation stays inline here.
+      setDoneLabel(t(l.done, { n: vault.number, amount: formatToken(q.seized, seizeAsset, locale) }))
       setInput("")
       setTouched(false)
     }
@@ -158,7 +159,7 @@ export function LiquidatePanel({ vault }: { vault: Vault }) {
           {tx.busy ? <Loader2Icon className="animate-spin" aria-hidden="true" /> : <GavelIcon aria-hidden="true" />}
           {t(l.submit, { n: vault.number })}
         </Button>
-        <TxFeedback state={tx.state} onRetry={() => void submit()} onDismiss={tx.reset} />
+        <TxFeedback state={tx.state} confirmedLabel={doneLabel} onRetry={() => void submit()} onDismiss={tx.reset} />
       </form>
     </section>
   )

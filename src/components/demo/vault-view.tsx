@@ -93,7 +93,7 @@ export function VaultView({ id }: { id: string }) {
         </p>
       ) : null}
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-start">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-start">
         <div className="flex flex-col gap-6">
           {/* Your latest liquidation receipt sits left, clear of the top-right toasts. */}
           {lastLiquidation ? (
