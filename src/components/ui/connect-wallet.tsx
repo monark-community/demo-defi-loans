@@ -47,7 +47,7 @@ function ConnectWallet({
   if (status === "connecting") {
     return (
       <Button disabled className={className} {...props}>
-        <Loader2Icon className="mr-2 size-4 animate-spin" />
+        <Loader2Icon className="size-4 animate-spin" />
         {connectingLabel}
       </Button>
     )
@@ -61,14 +61,14 @@ function ConnectWallet({
             type="button"
             data-slot="connect-wallet-trigger"
             className={cn(
-              "inline-flex items-center gap-3 rounded-lg border bg-card p-2 pr-3 text-card-foreground shadow-xs outline-hidden transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+              "inline-flex items-center gap-2.5 rounded-full border bg-card p-1 pr-3 text-card-foreground outline-hidden transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
               className
             )}
           >
-            <WalletAvatar address={address} size={32} />
+            <WalletAvatar address={address} size={30} />
             <div className="flex min-w-0 flex-col text-left leading-tight">
               {name && (
-                <span className="truncate text-sm font-medium">{name}</span>
+                <span className="truncate text-sm font-bold">{name}</span>
               )}
               <WalletAddress
                 address={address}
@@ -83,7 +83,7 @@ function ConnectWallet({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onSelect={onDisconnect}>
-            <LogOutIcon className="mr-2 size-4" />
+            <LogOutIcon className="size-4" />
             {disconnectLabel}
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -93,7 +93,7 @@ function ConnectWallet({
 
   return (
     <Button onClick={onConnect} className={className} {...props}>
-      <WalletIcon className="mr-2 size-4" />
+      <WalletIcon className="size-4" />
       {connectLabel}
     </Button>
   )

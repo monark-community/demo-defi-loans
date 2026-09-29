@@ -22,6 +22,8 @@ function Wallet({
   name,
   size = "md",
   showCopy = true,
+  copyLabel,
+  copiedLabel,
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & {
@@ -29,12 +31,14 @@ function Wallet({
   name?: string
   size?: WalletSize
   showCopy?: boolean
+  copyLabel?: string
+  copiedLabel?: string
 }) {
   return (
     <div
       data-slot="wallet"
       className={cn(
-        "inline-flex items-center gap-3 rounded-lg border bg-card p-2 pr-3 text-card-foreground shadow-xs",
+        "inline-flex max-w-full items-center gap-3 rounded-full border bg-card p-1 pr-2 text-card-foreground",
         className
       )}
       {...props}
@@ -42,7 +46,7 @@ function Wallet({
       <WalletAvatar address={address} size={avatarPx[size]} />
       <div className="flex min-w-0 flex-col leading-tight">
         {name && (
-          <span className={cn("truncate font-medium", nameText[size])}>
+          <span className={cn("truncate font-bold", nameText[size])}>
             {name}
           </span>
         )}
@@ -54,7 +58,7 @@ function Wallet({
           )}
         />
       </div>
-      {showCopy && <WalletCopyButton address={address} />}
+      {showCopy && <WalletCopyButton address={address} copyLabel={copyLabel} copiedLabel={copiedLabel} />}
     </div>
   )
 }
@@ -108,9 +112,13 @@ function WalletAddress({
 function WalletCopyButton({
   address,
   className,
+  copyLabel = "Copy address",
+  copiedLabel = "Address copied",
   ...props
 }: Omit<React.ComponentProps<typeof Button>, "children" | "onClick"> & {
   address: string
+  copyLabel?: string
+  copiedLabel?: string
 }) {
   const [copied, setCopied] = React.useState(false)
 
@@ -129,7 +137,7 @@ function WalletCopyButton({
       variant="ghost"
       size="icon"
       onClick={onCopy}
-      aria-label={copied ? "Address copied" : "Copy address"}
+      aria-label={copied ? copiedLabel : copyLabel}
       className={cn("size-7", className)}
       {...props}
     >

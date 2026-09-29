@@ -17,7 +17,9 @@ function formatBaseUnits(
   const whole = abs / base
   const frac = abs % base
 
-  const wholeStr = new Intl.NumberFormat(locale).format(whole)
+  const nf = new Intl.NumberFormat(locale)
+  const wholeStr = nf.format(whole)
+  const sep = nf.formatToParts(1.5).find((p) => p.type === "decimal")?.value ?? "."
   if (frac === 0n || maxFractionDigits === 0) {
     return `${negative ? "-" : ""}${wholeStr}`
   }
@@ -27,7 +29,7 @@ function formatBaseUnits(
     .slice(0, maxFractionDigits)
     .replace(/0+$/, "")
   return fracStr
-    ? `${negative ? "-" : ""}${wholeStr}.${fracStr}`
+    ? `${negative ? "-" : ""}${wholeStr}${sep}${fracStr}`
     : `${negative ? "-" : ""}${wholeStr}`
 }
 
