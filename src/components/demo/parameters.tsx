@@ -110,7 +110,7 @@ function ProposeForm() {
   const current = paramValue(demo, asset, activeParam)
   const [min, max] = RANGES[activeParam]
 
-  const raw = input.trim().replace(",", ".").replace("%", "")
+  const raw = input.trim().replace(/,/g, ".").replace(/%/g, "")
   const pct = raw ? Number(raw) : NaN
   let error: string | null = null
   if (raw && (!/^\d+(\.\d+)?$/.test(raw) || !Number.isFinite(pct))) error = f.errors.invalid
