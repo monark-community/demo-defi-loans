@@ -105,7 +105,7 @@ export function StressWidget({
           value={[pct]}
           onValueChange={(v) => setPct(v[0] ?? 100)}
           thumbLabel={copy.slider}
-          aria-valuetext={formatPrice(price, locale)}
+          valueText={() => formatPrice(price, locale)}
           className="mt-1"
         />
         <div className="mt-2 flex flex-wrap items-center gap-2">

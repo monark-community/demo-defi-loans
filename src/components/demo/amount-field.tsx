@@ -1,5 +1,6 @@
 "use client"
 
+import { FieldError } from "@/components/ui/field-error"
 import { Input } from "@/components/ui/input"
 import type { TokenSymbol } from "@/lib/demo/types"
 import { cn } from "@/lib/utils"
@@ -79,11 +80,7 @@ export function AmountField({
           </button>
         ) : null}
       </div>
-      {error ? (
-        <p id={`${id}-error`} className="text-sm text-destructive">
-          {error}
-        </p>
-      ) : null}
+      <FieldError id={`${id}-error`}>{error}</FieldError>
     </div>
   )
 }
