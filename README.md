@@ -13,7 +13,7 @@ It's built for students and study groups learning DeFi lending, and for builders
 
 ## Run it locally
 
-Requirements: Node.js 22 and pnpm 10.
+Requirements: Node.js 24 and pnpm 10.
 
 ```bash
 pnpm install
@@ -77,4 +77,4 @@ Stack: Next.js 16 (App Router, Turbopack), TypeScript strict, Tailwind CSS 4, sh
 
 ## Deploy to Vercel
 
-Import the repository in Vercel and deploy with the framework defaults (Next.js, `pnpm install`, `pnpm build`). No `vercel.json` and no environment variables are needed; the Node version is pinned in `package.json` (`engines.node: 22.x`). Every route prerenders at build time except vault pages created in the browser, which render on demand.
+Import the repository in Vercel and deploy with the framework defaults (Next.js, `pnpm install`, `pnpm build`). No `vercel.json` and no environment variables are needed; the Node version is pinned in `package.json` (`engines.node: 24.x`). Every route prerenders at build time except vault pages created in the browser, which render on demand.
