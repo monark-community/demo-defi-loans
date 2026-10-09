@@ -10,7 +10,7 @@ import { TimelockTimeline } from "@/components/diagrams/timelock"
 import { StressWidget } from "@/components/home/stress-widget"
 import { ResponsiveRuler } from "@/components/risk/health-ruler"
 import { StatusChip } from "@/components/risk/status-chip"
-import { SectionDivider } from "@/components/site/section-divider"
+import { SectionDivider } from "@/components/ui/section-divider"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { href, isLocale, type Locale } from "@/i18n/config"
@@ -97,7 +97,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </div>
       </section>
 
-      <SectionDivider />
+      <SectionDivider contained />
 
       {/* Inside the console */}
       <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:py-20" aria-labelledby="console-title">
@@ -168,7 +168,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         <Accordion type="single" collapsible className="mt-8">
           {h.faq.items.map((item, i) => (
             <AccordionItem key={item.q} value={`q${i}`}>
-              <AccordionTrigger className="text-left text-base font-bold">{item.q}</AccordionTrigger>
+              <AccordionTrigger className="text-base font-bold">{item.q}</AccordionTrigger>
               <AccordionContent className="text-muted-foreground">{item.a}</AccordionContent>
             </AccordionItem>
           ))}
