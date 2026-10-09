@@ -4,6 +4,8 @@ import { Loader2Icon } from "lucide-react"
 import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { TxFeedback } from "@/components/ui/tx-feedback"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { t } from "@/i18n/t"
 import { useTx } from "@/lib/demo/chain"
@@ -13,12 +15,10 @@ import { useDemo } from "@/lib/demo/store"
 import { COLLATERAL, floorTo, parseAmount } from "@/lib/demo/tokens"
 import type { CollateralSymbol, TokenSymbol, Vault } from "@/lib/demo/types"
 import { formatHf, formatToken, inputValue } from "@/lib/format"
-import { cn } from "@/lib/utils"
 
 import { AmountField } from "./amount-field"
-import { useAppCopy } from "./app-provider"
+import { txFeedbackProps, useAppCopy } from "./app-provider"
 import { PositionPreview } from "./position-preview"
-import { TxFeedback } from "./tx-feedback"
 
 type Action = "deposit" | "withdraw" | "borrow" | "repay"
 const ACTIONS: Action[] = ["deposit", "withdraw", "borrow", "repay"]
@@ -150,24 +150,24 @@ function ActionForm({ action, vault }: { action: Action; vault: Vault }) {
       }}
     >
       {isCollateral ? (
-        <div role="group" aria-label={a.asset} className="flex flex-wrap gap-1.5">
+        <ToggleGroup
+          type="single"
+          variant="chip"
+          size="sm"
+          aria-label={a.asset}
+          value={asset}
+          onValueChange={(c) => {
+            if (!c) return
+            setAsset(c as typeof asset)
+            setInput("")
+          }}
+        >
           {assetChoices.map((c) => (
-            <Button
-              key={c}
-              type="button"
-              size="sm"
-              variant="outline"
-              aria-pressed={asset === c}
-              className={cn(asset === c && "border-primary bg-primary/10")}
-              onClick={() => {
-                setAsset(c)
-                setInput("")
-              }}
-            >
+            <ToggleGroupItem key={c} value={c}>
               {c}
-            </Button>
+            </ToggleGroupItem>
           ))}
-        </div>
+        </ToggleGroup>
       ) : null}
       <AmountField
         id={`${action}-amount`}
@@ -189,7 +189,7 @@ function ActionForm({ action, vault }: { action: Action; vault: Vault }) {
         {tx.busy ? <Loader2Icon className="animate-spin" aria-hidden="true" /> : null}
         {t(a.submit[action], { asset: token })}
       </Button>
-      <TxFeedback state={tx.state} confirmedLabel={doneLabel} onRetry={() => void submit()} onDismiss={tx.reset} />
+      <TxFeedback {...txFeedbackProps(app.tx, tx.state, { confirmedLabel: doneLabel })} onRetry={() => void submit()} onDismiss={tx.reset} />
     </form>
   )
 }
