@@ -5,6 +5,8 @@ import { useState } from "react"
 
 import { StatusChip, statusText } from "@/components/risk/status-chip"
 import { Button } from "@/components/ui/button"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { TxFeedback } from "@/components/ui/tx-feedback"
 import { InfoTip } from "@/components/ui/info-tip"
 import { t } from "@/i18n/t"
 import { useTx } from "@/lib/demo/chain"
@@ -17,8 +19,7 @@ import { formatHf, formatPct, formatToken, formatUsd, inputValue } from "@/lib/f
 import { cn } from "@/lib/utils"
 
 import { AmountField } from "./amount-field"
-import { useAppCopy } from "./app-provider"
-import { TxFeedback } from "./tx-feedback"
+import { txFeedbackProps, useAppCopy } from "./app-provider"
 
 /** The liquidator's side: repay up to the close factor, pick the collateral to receive, see the bonus. */
 export function LiquidatePanel({ vault }: { vault: Vault }) {
@@ -111,21 +112,21 @@ export function LiquidatePanel({ vault }: { vault: Vault }) {
           <p className="text-sm font-semibold" id="seize-label">
             {l.seize}
           </p>
-          <div role="group" aria-labelledby="seize-label" className="mt-2 flex flex-wrap gap-1.5">
+          <ToggleGroup
+            type="single"
+            variant="chip"
+            size="sm"
+            aria-labelledby="seize-label"
+            className="mt-2"
+            value={seizeAsset}
+            onValueChange={(c) => c && setAsset(c as typeof seizeAsset)}
+          >
             {held.map((c) => (
-              <Button
-                key={c}
-                type="button"
-                size="sm"
-                variant="outline"
-                aria-pressed={seizeAsset === c}
-                className={cn(seizeAsset === c && "border-primary bg-primary/10")}
-                onClick={() => setAsset(c)}
-              >
+              <ToggleGroupItem key={c} value={c}>
                 {c} · +{formatPct(demo.params.collateral[c].liqBonus, locale, 1)}
-              </Button>
+              </ToggleGroupItem>
             ))}
-          </div>
+          </ToggleGroup>
         </div>
 
         <dl className="grid grid-cols-2 gap-3 rounded-2xl border bg-background/60 p-4 text-sm">
@@ -158,7 +159,7 @@ export function LiquidatePanel({ vault }: { vault: Vault }) {
           {tx.busy ? <Loader2Icon className="animate-spin" aria-hidden="true" /> : <GavelIcon aria-hidden="true" />}
           {t(l.submit, { n: vault.number })}
         </Button>
-        <TxFeedback state={tx.state} confirmedLabel={doneLabel} onRetry={() => void submit()} onDismiss={tx.reset} />
+        <TxFeedback {...txFeedbackProps(app.tx, tx.state, { confirmedLabel: doneLabel })} onRetry={() => void submit()} onDismiss={tx.reset} />
       </form>
     </section>
   )

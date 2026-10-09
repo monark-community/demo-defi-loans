@@ -5,6 +5,7 @@ import Link from "next/link"
 
 import { StatusChip, statusText } from "@/components/risk/status-chip"
 import { Button } from "@/components/ui/button"
+import { Empty, EmptyContent, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
 import { InfoTip } from "@/components/ui/info-tip"
 import { href } from "@/i18n/config"
 import { t } from "@/i18n/t"
@@ -49,13 +50,17 @@ export function Liquidations() {
           {l.queueTitle}
         </h2>
         {ready.length === 0 ? (
-          <div className="mt-4 flex flex-col items-center rounded-3xl border border-dashed bg-card px-6 py-12 text-center">
-            <ShieldCheckIcon className="size-9 text-primary" strokeWidth={1.5} aria-hidden="true" />
-            <p className="mt-4 text-lg font-bold">{l.empty.title}</p>
-            <Button asChild className="mt-6">
-              <Link href={href(locale, "/app#stress-test")}>{l.empty.cta}</Link>
-            </Button>
-          </div>
+          <Empty size="lg" className="mt-4 bg-card py-12 sm:py-12">
+            <EmptyMedia variant="plain">
+              <ShieldCheckIcon className="size-9 text-primary" strokeWidth={1.5} />
+            </EmptyMedia>
+            <EmptyTitle>{l.empty.title}</EmptyTitle>
+            <EmptyContent>
+              <Button asChild>
+                <Link href={href(locale, "/app#stress-test")}>{l.empty.cta}</Link>
+              </Button>
+            </EmptyContent>
+          </Empty>
         ) : (
           <ul className="mt-4 grid gap-4 md:grid-cols-2">
             {ready.map(({ v, hf }) => {

@@ -7,7 +7,7 @@ import type { ReactNode } from "react"
 
 import { ReceiptBar } from "@/components/diagrams/receipt-bar"
 import { TimelockTimeline } from "@/components/diagrams/timelock"
-import { SectionDivider } from "@/components/site/section-divider"
+import { SectionDivider } from "@/components/ui/section-divider"
 import { Button } from "@/components/ui/button"
 import { Disclosure } from "@/components/ui/disclosure"
 import { href, isLocale } from "@/i18n/config"
@@ -82,7 +82,7 @@ export default async function HowItWorksPage({ params }: PageProps<"/[locale]/ho
             <p className="mt-3 text-muted-foreground">{h.hf.body}</p>
             <Formula>{h.hf.formula}</Formula>
             <p className="mt-4 text-sm text-muted-foreground">{h.hf.bands}</p>
-            <Disclosure summary={h.show.example} className="mt-5">
+            <Disclosure variant="pill" summary={h.show.example} className="mt-5">
             <div className="grid gap-5 rounded-3xl border bg-card p-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:p-6">
               <div>
                 <h3 className="font-bold">{h.hf.exampleTitle}</h3>
@@ -121,7 +121,7 @@ export default async function HowItWorksPage({ params }: PageProps<"/[locale]/ho
           <Block id="liquidation-price" title={h.liqPrice.title}>
             <p className="mt-3 text-muted-foreground">{h.liqPrice.body}</p>
             <Formula>{h.liqPrice.formula}</Formula>
-            <Disclosure summary={h.show.example} className="mt-5">
+            <Disclosure variant="pill" summary={h.show.example} className="mt-5">
               <p className="font-semibold tnum">{h.liqPrice.example}</p>
               <p className="mt-2 text-sm text-muted-foreground">{h.liqPrice.note}</p>
             </Disclosure>
@@ -130,7 +130,7 @@ export default async function HowItWorksPage({ params }: PageProps<"/[locale]/ho
           <Block id="interest" title={h.interest.title}>
             <p className="mt-3 text-muted-foreground">{h.interest.body}</p>
             <Formula>{h.interest.formula}</Formula>
-            <Disclosure summary={h.show.example} className="mt-5">
+            <Disclosure variant="pill" summary={h.show.example} className="mt-5">
               <p className="font-semibold tnum">{h.interest.example}</p>
             </Disclosure>
           </Block>
@@ -145,7 +145,7 @@ export default async function HowItWorksPage({ params }: PageProps<"/[locale]/ho
                 </div>
               ))}
             </dl>
-            <Disclosure summary={h.show.receipt} className="mt-5">
+            <Disclosure variant="pill" summary={h.show.receipt} className="mt-5">
             <div className="rounded-3xl border bg-card p-5 sm:p-6">
               <h3 className="font-bold">{h.liquidation.receiptTitle}</h3>
               <dl className="mt-3 flex flex-col divide-y text-sm">
@@ -170,7 +170,7 @@ export default async function HowItWorksPage({ params }: PageProps<"/[locale]/ho
             </Disclosure>
           </Block>
 
-          <SectionDivider className="px-0 sm:px-0" />
+          <SectionDivider />
 
           <Block id="parameters" title={h.params.title}>
             <p className="mt-3 text-muted-foreground">{h.params.body}</p>

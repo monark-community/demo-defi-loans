@@ -7,8 +7,11 @@ import { useState } from "react"
 import { dotSize, ResponsiveRuler } from "@/components/risk/health-ruler"
 import { StatusChip, statusText } from "@/components/risk/status-chip"
 import { Button } from "@/components/ui/button"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { Empty } from "@/components/ui/empty"
 import { InfoTip } from "@/components/ui/info-tip"
 import { Slider } from "@/components/ui/slider"
+import { Stat, StatGroup, StatHint, StatLabel, StatValue } from "@/components/ui/stat"
 import { href } from "@/i18n/config"
 import { t } from "@/i18n/t"
 import { setShocks } from "@/lib/demo/ops"
@@ -56,22 +59,29 @@ export function Console() {
       </div>
 
       {/* Protocol stats */}
-      <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat label={c.stats.collateral} value={formatUsd(stats.collateralUsd, locale, true)} hint={t(c.stats.collateralRatio, { ratio: formatPctPlain(stats.collateralRatio, locale) })} />
-        <Stat label={c.stats.debt} value={formatUsd(stats.debtUsd, locale, true)} />
-        <Stat
-          label={c.stats.atRisk}
-          value={formatUsd(stats.atRiskDebtUsd, locale, true)}
-          hint={stats.atRisk + stats.liquidatable === 1 ? c.stats.atRiskHintOne : t(c.stats.atRiskHint, { n: stats.atRisk + stats.liquidatable })}
-          tone={stats.atRiskDebtUsd > 0 ? "text-warning" : undefined}
-        />
-        <Stat
-          label={c.stats.liquidatable}
-          value={String(stats.liquidatable)}
-          hint={t(c.stats.liquidatableHint, { n: stats.vaults })}
-          tone={stats.liquidatable > 0 ? "text-danger" : undefined}
-        />
-      </dl>
+      <StatGroup className="grid-cols-2">
+        <Stat>
+          <StatLabel>{c.stats.collateral}</StatLabel>
+          <StatValue>{formatUsd(stats.collateralUsd, locale, true)}</StatValue>
+          <StatHint>{t(c.stats.collateralRatio, { ratio: formatPctPlain(stats.collateralRatio, locale) })}</StatHint>
+        </Stat>
+        <Stat>
+          <StatLabel>{c.stats.debt}</StatLabel>
+          <StatValue>{formatUsd(stats.debtUsd, locale, true)}</StatValue>
+        </Stat>
+        <Stat tone={stats.atRiskDebtUsd > 0 ? "warning" : "default"}>
+          <StatLabel>{c.stats.atRisk}</StatLabel>
+          <StatValue>{formatUsd(stats.atRiskDebtUsd, locale, true)}</StatValue>
+          <StatHint>
+            {stats.atRisk + stats.liquidatable === 1 ? c.stats.atRiskHintOne : t(c.stats.atRiskHint, { n: stats.atRisk + stats.liquidatable })}
+          </StatHint>
+        </Stat>
+        <Stat tone={stats.liquidatable > 0 ? "destructive" : "default"}>
+          <StatLabel>{c.stats.liquidatable}</StatLabel>
+          <StatValue>{String(stats.liquidatable)}</StatValue>
+          <StatHint>{t(c.stats.liquidatableHint, { n: stats.vaults })}</StatHint>
+        </Stat>
+      </StatGroup>
 
       <RiskMap demo={demo} />
 
@@ -87,16 +97,6 @@ export function Console() {
 
 function formatPctPlain(ratio: number, locale: "en" | "fr") {
   return new Intl.NumberFormat(locale === "fr" ? "fr-CA" : "en-CA", { style: "percent", maximumFractionDigits: 0 }).format(ratio)
-}
-
-function Stat({ label, value, hint, tone }: { label: string; value: string; hint?: string; tone?: string }) {
-  return (
-    <div className="rounded-2xl border bg-card p-4">
-      <dt className="text-xs font-semibold text-muted-foreground">{label}</dt>
-      <dd className={cn("mt-1 text-2xl font-extrabold tracking-display tnum transition-colors duration-200 sm:text-[1.75rem]", tone)}>{value}</dd>
-      {hint ? <dd className="mt-0.5 text-xs text-muted-foreground tnum">{hint}</dd> : null}
-    </div>
-  )
 }
 
 function RiskMap({ demo }: { demo: DemoState }) {
@@ -185,7 +185,7 @@ function StressTest({ demo }: { demo: DemoState }) {
                 value={[Math.round(mult * 100)]}
                 onValueChange={(v) => setShocks({ [asset]: (v[0] ?? 100) / 100 })}
                 thumbLabel={t(s.slider, { asset })}
-                aria-valuetext={formatPrice(price, locale)}
+                valueText={() => formatPrice(price, locale)}
               />
             </div>
           )
@@ -196,15 +196,24 @@ function StressTest({ demo }: { demo: DemoState }) {
         <p className="eyebrow text-muted-foreground" id="presets-label">
           {s.presets.label}
         </p>
-        <div className="mt-2 flex flex-wrap gap-2" role="group" aria-labelledby="presets-label">
-          {PRESETS.map((p) => {
-            const active = COLLATERAL.every((a) => demo.shocks[a] === p.shocks[a])
-            return (
-              <Button key={p.key} size="sm" variant="outline" aria-pressed={active} className={cn(active && "border-primary bg-primary/10")} onClick={() => setShocks(p.shocks)}>
+        <div className="mt-2 flex flex-wrap gap-2">
+          <ToggleGroup
+            type="single"
+            variant="chip"
+            size="sm"
+            aria-labelledby="presets-label"
+            value={PRESETS.find((p) => COLLATERAL.every((a) => demo.shocks[a] === p.shocks[a]))?.key ?? ""}
+            onValueChange={(key) => {
+              const preset = PRESETS.find((p) => p.key === key)
+              if (preset) setShocks(preset.shocks)
+            }}
+          >
+            {PRESETS.map((p) => (
+              <ToggleGroupItem key={p.key} value={p.key}>
                 {s.presets[p.key]}
-              </Button>
-            )
-          })}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
           <Button size="sm" variant="ghost" disabled={isReference} onClick={() => setShocks({ tETH: 1, tWBTC: 1, tLINK: 1 })}>
             <RotateCcwIcon aria-hidden="true" />
             {s.presets.reset}
@@ -235,7 +244,9 @@ function Alerts({ alerts }: { alerts: AlertEvent[] }) {
         </h2>
       </div>
       {shown.length === 0 ? (
-        <p className="mt-6 rounded-2xl border border-dashed p-6 text-center text-sm text-muted-foreground">{a.empty}</p>
+        <Empty size="sm" className="mt-6">
+          {a.empty}
+        </Empty>
       ) : (
         <ol aria-live="polite" className="mt-4 flex flex-col gap-2">
           {shown.map((alert) => (
@@ -288,16 +299,26 @@ function VaultTable({ demo }: { demo: DemoState }) {
         <h2 id="vaults-title" className="text-xl font-bold">
           {tb.title}
         </h2>
-        <div role="group" aria-label={tb.filterLabel} className="flex flex-wrap gap-1.5">
+        <ToggleGroup
+          type="single"
+          variant="chip"
+          size="sm"
+          aria-label={tb.filterLabel}
+          // Denser than the default chip so the four filters fit one row at 390px.
+          className="gap-1.5"
+          value={filter}
+          onValueChange={(f) => {
+            if (!f) return
+            setFilter(f as Filter)
+            setShowAll(false)
+          }}
+        >
           {(Object.keys(tb.filters) as Filter[]).map((f) => (
-            <Button key={f} size="xs" variant={filter === f ? "default" : "outline"} aria-pressed={filter === f} onClick={() => {
-                setFilter(f)
-                setShowAll(false)
-              }} className="h-8 px-3">
+            <ToggleGroupItem key={f} value={f} className="h-8 px-3">
               {tb.filters[f]}
-            </Button>
+            </ToggleGroupItem>
           ))}
-        </div>
+        </ToggleGroup>
       </div>
 
       {rows.length === 0 ? (

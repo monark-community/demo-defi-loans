@@ -1,32 +1,71 @@
 "use client"
 
 import * as React from "react"
+import { cn } from "cn"
 import { Slider as SliderPrimitive } from "radix-ui"
 
-import { cn } from "@/lib/utils"
-
-/** @monark/ui slider, restyled for the 2026 look: flat orange range, pill thumb, 44px touch target. */
 function Slider({
   className,
+  defaultValue,
+  value,
+  min = 0,
+  max = 100,
   thumbLabel,
+  valueText,
   ...props
-}: React.ComponentProps<typeof SliderPrimitive.Root> & { thumbLabel?: string }) {
+}: React.ComponentProps<typeof SliderPrimitive.Root> & {
+  /** Accessible name for each thumb; a function receives the thumb index. */
+  thumbLabel?: string | ((index: number) => string)
+  /** Spoken value (`aria-valuetext`), e.g. "45%" or "1,200 USDC". */
+  valueText?: (value: number, index: number) => string
+}) {
+  const _values = React.useMemo(
+    () =>
+      Array.isArray(value)
+        ? value
+        : Array.isArray(defaultValue)
+          ? defaultValue
+          : [min, max],
+    [value, defaultValue, min, max]
+  )
+
   return (
     <SliderPrimitive.Root
       data-slot="slider"
+      defaultValue={defaultValue}
+      value={value}
+      min={min}
+      max={max}
       className={cn(
-        "relative flex h-11 w-full touch-none items-center select-none data-[disabled]:opacity-50",
+        "relative flex w-full touch-none items-center select-none data-disabled:opacity-50 data-horizontal:min-h-11 data-vertical:h-full data-vertical:min-h-40 data-vertical:w-auto data-vertical:min-w-11 data-vertical:flex-col",
         className
       )}
       {...props}
     >
-      <SliderPrimitive.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-muted">
-        <SliderPrimitive.Range className="absolute h-full bg-primary" />
+      <SliderPrimitive.Track
+        data-slot="slider-track"
+        className="relative grow overflow-hidden rounded-full bg-muted data-horizontal:h-1.5 data-horizontal:w-full data-vertical:h-full data-vertical:w-1.5"
+      >
+        <SliderPrimitive.Range
+          data-slot="slider-range"
+          className="absolute bg-primary select-none data-horizontal:h-full data-vertical:w-full"
+        />
       </SliderPrimitive.Track>
-      <SliderPrimitive.Thumb
-        aria-label={thumbLabel}
-        className="block size-5 rounded-full border-2 border-primary bg-card transition-[box-shadow] duration-150 outline-none hover:ring-4 hover:ring-primary/20 focus-visible:ring-4 focus-visible:ring-ring/50"
-      />
+      {Array.from({ length: _values.length }, (_, index) => (
+        <SliderPrimitive.Thumb
+          data-slot="slider-thumb"
+          key={index}
+          aria-label={
+            typeof thumbLabel === "function" ? thumbLabel(index) : thumbLabel
+          }
+          aria-valuetext={
+            valueText && _values[index] !== undefined
+              ? valueText(_values[index], index)
+              : undefined
+          }
+          className="relative block size-5 shrink-0 rounded-full border-2 border-primary-ink bg-card ring-ring/50 transition-[color,box-shadow] select-none after:absolute after:-inset-3 hover:ring-3 focus-visible:ring-3 focus-visible:outline-hidden active:ring-3 disabled:pointer-events-none disabled:opacity-50"
+        />
+      ))}
     </SliderPrimitive.Root>
   )
 }

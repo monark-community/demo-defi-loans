@@ -6,6 +6,10 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
+import { FieldError } from "@/components/ui/field-error"
+import { RadioGroup, RadioGroupItem, RadioGroupItemDescription, RadioGroupItemTitle } from "@/components/ui/radio-group"
+import { TxFeedback } from "@/components/ui/tx-feedback"
+import { Empty } from "@/components/ui/empty"
 import { InfoTip } from "@/components/ui/info-tip"
 import { href } from "@/i18n/config"
 import { t } from "@/i18n/t"
@@ -16,12 +20,10 @@ import { useDemo } from "@/lib/demo/store"
 import { COLLATERAL, DEBT, floorTo, parseAmount } from "@/lib/demo/tokens"
 import type { CollateralBag, CollateralSymbol, DebtSymbol } from "@/lib/demo/types"
 import { formatHf, formatPct, formatToken, inputValue } from "@/lib/format"
-import { cn } from "@/lib/utils"
 
 import { AmountField } from "./amount-field"
-import { useAppCopy } from "./app-provider"
+import { txFeedbackProps, useAppCopy } from "./app-provider"
 import { PositionPreview } from "./position-preview"
-import { TxFeedback } from "./tx-feedback"
 
 export function OpenVault() {
   const demo = useDemo()
@@ -127,9 +129,7 @@ export function OpenVault() {
               ))}
             </div>
             {collateralError ? (
-              <p role="alert" className="mt-3 text-sm text-destructive">
-                {collateralError}
-              </p>
+              <FieldError className="mt-3">{collateralError}</FieldError>
             ) : null}
           </fieldset>
 
@@ -138,27 +138,24 @@ export function OpenVault() {
             <h2 className="text-lg font-bold" aria-hidden="true">
               {o.debtTitle}
             </h2>
-            <div className="mt-4" role="group" aria-label={o.debtAsset}>
+            <div className="mt-4">
               <p className="text-sm font-semibold" aria-hidden="true">
                 {o.debtAsset}
               </p>
-              <div className="mt-2 grid grid-cols-2 gap-2">
+              <RadioGroup
+                variant="card"
+                aria-label={o.debtAsset}
+                className="mt-2 grid-cols-2"
+                value={debtToken}
+                onValueChange={(d) => setDebtToken(d as DebtSymbol)}
+              >
                 {DEBT.map((d) => (
-                  <button
-                    key={d}
-                    type="button"
-                    aria-pressed={debtToken === d}
-                    onClick={() => setDebtToken(d)}
-                    className={cn(
-                      "flex flex-col items-start rounded-2xl border px-4 py-3 text-left transition-colors",
-                      debtToken === d ? "border-primary bg-primary/10" : "border-input hover:bg-muted"
-                    )}
-                  >
-                    <span className="font-bold">{d}</span>
-                    <span className="text-xs text-muted-foreground tnum">{t(o.apr, { apr: formatPct(demo.params.debt[d].apr, locale) })}</span>
-                  </button>
+                  <RadioGroupItem key={d} value={d}>
+                    <RadioGroupItemTitle>{d}</RadioGroupItemTitle>
+                    <RadioGroupItemDescription className="tnum">{t(o.apr, { apr: formatPct(demo.params.debt[d].apr, locale) })}</RadioGroupItemDescription>
+                  </RadioGroupItem>
                 ))}
-              </div>
+              </RadioGroup>
             </div>
             <AmountField
               id="debt"
@@ -184,7 +181,7 @@ export function OpenVault() {
               {tx.busy ? <Loader2Icon className="animate-spin" aria-hidden="true" /> : <LockIcon aria-hidden="true" />}
               {o.submit}
             </Button>
-            <TxFeedback state={tx.state} onRetry={() => void submit()} onDismiss={tx.reset} />
+            <TxFeedback {...txFeedbackProps(app.tx, tx.state)} onRetry={() => void submit()} onDismiss={tx.reset} />
           </div>
         </form>
 
@@ -203,7 +200,9 @@ export function OpenVault() {
           {hasCollateral ? (
             <PositionPreview after={position} prices={prices} params={demo.params} className="mt-4" />
           ) : (
-            <p className="mt-4 rounded-2xl border border-dashed p-6 text-center text-sm text-muted-foreground">{o.previewEmpty}</p>
+            <Empty size="sm" className="mt-4">
+              {o.previewEmpty}
+            </Empty>
           )}
         </aside>
       </div>

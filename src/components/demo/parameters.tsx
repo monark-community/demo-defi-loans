@@ -7,6 +7,9 @@ import { useState } from "react"
 import { dotSize, ResponsiveRuler } from "@/components/risk/health-ruler"
 import { StatusChip } from "@/components/risk/status-chip"
 import { Button } from "@/components/ui/button"
+import { FieldError } from "@/components/ui/field-error"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { TxFeedback } from "@/components/ui/tx-feedback"
 import { InfoTip } from "@/components/ui/info-tip"
 import { Input } from "@/components/ui/input"
 import { href } from "@/i18n/config"
@@ -20,8 +23,7 @@ import type { CollateralSymbol, DebtSymbol, ParamKey, Proposal, TokenSymbol } fr
 import { formatDateTime, formatHf, formatPct, inputValue } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
-import { useAppCopy } from "./app-provider"
-import { TxFeedback } from "./tx-feedback"
+import { txFeedbackProps, useAppCopy } from "./app-provider"
 
 const RANGES: Record<ParamKey, [number, number]> = {
   maxLtv: [10, 90],
@@ -188,47 +190,49 @@ function ProposeForm() {
             <p id="asset-label" className="text-sm font-semibold">
               {f.asset}
             </p>
-            <div role="group" aria-labelledby="asset-label" className="mt-2 flex flex-wrap gap-1.5">
+            <ToggleGroup
+              type="single"
+              variant="chip"
+              size="sm"
+              aria-labelledby="asset-label"
+              className="mt-2"
+              value={asset}
+              onValueChange={(a) => {
+                if (!a) return
+                setAsset(a as typeof asset)
+                setInput("")
+              }}
+            >
               {[...COLLATERAL, ...DEBT].map((a) => (
-                <Button
-                  key={a}
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  aria-pressed={asset === a}
-                  className={cn(asset === a && "border-primary bg-primary/10")}
-                  onClick={() => {
-                    setAsset(a)
-                    setInput("")
-                  }}
-                >
+                <ToggleGroupItem key={a} value={a}>
                   {a}
-                </Button>
+                </ToggleGroupItem>
               ))}
-            </div>
+            </ToggleGroup>
           </div>
           <div>
             <p id="param-label" className="text-sm font-semibold">
               {f.param}
             </p>
-            <div role="group" aria-labelledby="param-label" className="mt-2 flex flex-wrap gap-1.5">
+            <ToggleGroup
+              type="single"
+              variant="chip"
+              size="sm"
+              aria-labelledby="param-label"
+              className="mt-2"
+              value={activeParam}
+              onValueChange={(k) => {
+                if (!k) return
+                setParam(k as typeof activeParam)
+                setInput("")
+              }}
+            >
               {paramChoices.map((k) => (
-                <Button
-                  key={k}
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  aria-pressed={activeParam === k}
-                  className={cn(activeParam === k && "border-primary bg-primary/10")}
-                  onClick={() => {
-                    setParam(k)
-                    setInput("")
-                  }}
-                >
+                <ToggleGroupItem key={k} value={k}>
                   {p.names[k]}
-                </Button>
+                </ToggleGroupItem>
               ))}
-            </div>
+            </ToggleGroup>
           </div>
           <div className="flex flex-col gap-1.5">
             <div className="flex items-baseline justify-between gap-3">
@@ -248,11 +252,7 @@ function ProposeForm() {
               aria-describedby={error ? "param-error" : undefined}
               className="h-12 rounded-2xl text-lg font-bold tnum"
             />
-            {error ? (
-              <p id="param-error" className="text-sm text-destructive">
-                {error}
-              </p>
-            ) : null}
+            <FieldError id="param-error">{error}</FieldError>
           </div>
         </fieldset>
 
@@ -294,7 +294,7 @@ function ProposeForm() {
           {tx.busy ? <Loader2Icon className="animate-spin" aria-hidden="true" /> : <TimerIcon aria-hidden="true" />}
           {f.submit}
         </Button>
-        <TxFeedback state={tx.state} confirmedLabel={doneLabel} onRetry={() => void submit()} onDismiss={tx.reset} />
+        <TxFeedback {...txFeedbackProps(app.tx, tx.state, { confirmedLabel: doneLabel })} onRetry={() => void submit()} onDismiss={tx.reset} />
       </form>
     </section>
   )
@@ -378,11 +378,9 @@ function ProposalRow({ proposal: p, clock }: { proposal: Proposal; clock: string
         </div>
       )}
       <TxFeedback
-        state={tx.state}
-        confirmedLabel={t(pr.doneExecute, { n: p.number })}
+        {...txFeedbackProps(app.tx, tx.state, { confirmedLabel: t(pr.doneExecute, { n: p.number }), className: "mt-3" })}
         onRetry={() => void execute()}
         onDismiss={tx.reset}
-        className="mt-3"
       />
     </li>
   )

@@ -119,7 +119,7 @@ async function appFlows(page, v) {
   await page.getByLabel("tETH amount").fill("2")
   await page.getByLabel("tLINK amount").fill("300")
   await page.getByLabel("Amount to borrow").fill("4000")
-  await page.getByRole("button", { name: "tDAI" }).click()
+  await page.getByRole("radio", { name: "tDAI" }).click()
   await shot(page, v, "flow2-03-open-filled", true)
   await page.getByRole("button", { name: "Demo controls" }).click()
   await page.getByLabel("Fail the next transaction").click()
@@ -145,7 +145,7 @@ async function appFlows(page, v) {
   await shot(page, v, "flow4-01-queue", true)
   await go(page, v, "/app/vaults/v1028")
   await page.getByLabel("Repay (tUSDC)").fill("6600")
-  await page.getByRole("button", { name: "tLINK · +10.0%" }).click()
+  await page.getByRole("radio", { name: "tLINK · +10.0%" }).click()
   await shot(page, v, "flow4-02-liquidate-form", true)
   await page.getByRole("button", { name: "Liquidate vault #1028" }).click()
   await dialog(page).waitFor()
@@ -161,7 +161,7 @@ async function appFlows(page, v) {
 
   // Flow 3: stress test, then rescue your vault
   await go(page, v, "/app")
-  await page.getByRole("button", { name: L.en.crash }).click()
+  await page.getByRole("radio", { name: L.en.crash }).click()
   await page.waitForTimeout(600)
   await page.locator("#risk-map").scrollIntoViewIfNeeded()
   await shot(page, v, "flow3-01-crash-map")
@@ -208,7 +208,7 @@ async function frenchFlow(page, v) {
   await shot(page, v, "page-home", true)
   // Flow 3 in French: connect, crash, rescue your vault
   await connect(page, v, true)
-  await page.getByRole("button", { name: L.fr.crash }).click()
+  await page.getByRole("radio", { name: L.fr.crash }).click()
   await page.waitForTimeout(600)
   await shot(page, v, "flow3-01-crash-console", true)
   await go(page, v, "/app/vaults/v1024")
